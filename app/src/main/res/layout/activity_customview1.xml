@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="泡泡弹窗"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+            <com.hx100.levi.customviewapplication.customview.BubbleView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/black"
+                app:bubble_color="@android:color/holo_blue_light"/>
+            <com.hx100.levi.customviewapplication.customview.WaveView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
+                android:visibility="visible"
+                android:background="@android:color/holo_blue_light"/>
+            <com.hx100.levi.customviewapplication.customview.Wave1View
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
+                android:background="@android:color/holo_blue_light"/>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

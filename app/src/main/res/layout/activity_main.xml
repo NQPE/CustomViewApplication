@@ -9,12 +9,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="自定义view练习"
-        android:textSize="16sp"
-        android:gravity="center"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="自定义view练习"
         android:textColor="@android:color/black"
-        />
+        android:textSize="16sp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -24,15 +24,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <Button
+                android:id="@+id/btn_customview1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="自定义view练习"
-                android:textSize="16sp"
-                android:gravity="center"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="泡泡弹窗+波浪view"
                 android:textColor="@android:color/black"
-                />
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 
