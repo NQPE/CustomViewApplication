@@ -35,6 +35,16 @@
                 android:text="泡泡弹窗+波浪view"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="圆形百分比（进度条）"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

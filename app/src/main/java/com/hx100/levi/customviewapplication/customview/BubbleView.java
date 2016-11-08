@@ -3,6 +3,7 @@ package com.hx100.levi.customviewapplication.customview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -42,7 +43,7 @@ public class BubbleView extends View{
         mTrianglePath=new Path();
         TypedArray typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.BubbleView);
-        bubble_color=typedArray.getColor(R.styleable.BubbleView_bubble_color,0XFFFFFFFF);
+        bubble_color=typedArray.getColor(R.styleable.BubbleView_bubble_color, Color.parseColor("#ffffff"));
         mPaint.setColor(bubble_color);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setAntiAlias(true);

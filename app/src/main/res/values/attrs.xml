@@ -3,4 +3,12 @@
     <declare-styleable name="BubbleView">
         <attr name="bubble_color" format="color"/>
     </declare-styleable>
+    <declare-styleable name="CirclePercentView">
+        <attr name="back_circle_color" format="color"/>
+        <attr name="percent_circle_color" format="color"/>
+        <attr name="percent_circle_width" format="dimension"/>
+        <attr name="percent_text_size" format="dimension"/>
+        <attr name="percent_text_color" format="color"/>
+        <attr name="percent_index" format="integer"/>
+    </declare-styleable>
 </resources>

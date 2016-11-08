@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.CutomView1Activity"></activity>
+        <activity android:name=".activity.CutomView2Activity"></activity>
     </application>
 
 </manifest>

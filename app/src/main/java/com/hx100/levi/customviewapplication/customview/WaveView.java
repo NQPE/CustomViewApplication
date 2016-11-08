@@ -23,7 +23,7 @@ public class WaveView extends View{
     int mRectHeight;
     float mRadius=25;
     Paint mPaint;
-    int mColor=0XFFFFFFFF;
+    int mColor=Color.parseColor("#ffffff");
     RectF mRectFLeft;
     RectF mRectFRight;
     int mCount;

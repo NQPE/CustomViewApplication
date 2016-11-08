@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hx100.levi.customviewapplication.activity.CutomView1Activity;
+import com.hx100.levi.customviewapplication.activity.CutomView2Activity;
 import com.hx100.levi.customviewapplication.utils.SimpleUtils;
 
 
@@ -22,6 +23,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void init() {
         findViewById(R.id.btn_customview1).setOnClickListener(this);
+        findViewById(R.id.btn_customview2).setOnClickListener(this);
     }
 
     @Override
@@ -29,6 +31,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
         switch (v.getId()){
             case R.id.btn_customview1:
                 SimpleUtils.skipActivity(this,CutomView1Activity.class);
+                break;
+            case R.id.btn_customview2:
+                SimpleUtils.skipActivity(this,CutomView2Activity.class);
                 break;
 
         }
