@@ -11,4 +11,9 @@
         <attr name="percent_text_color" format="color"/>
         <attr name="percent_index" format="integer"/>
     </declare-styleable>
+    <declare-styleable name="RecyclerViewPager">
+        <attr name="rvp_triggerOffset" format="float" />
+        <attr name="rvp_flingFactor" format="float" />
+        <attr name="rvp_singlePageFling" format="boolean" />
+    </declare-styleable>
 </resources>

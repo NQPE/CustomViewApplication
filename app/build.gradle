@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc3"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.hx100.levi.customviewapplication"
@@ -23,5 +23,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     //junit
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.0.0-alpha2'
+    compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.android.support:recyclerview-v7:23.2.0'
+    compile 'com.android.support:design:23.2.0'
 }
