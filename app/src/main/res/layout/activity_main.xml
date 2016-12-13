@@ -55,6 +55,16 @@
                 android:text="可控制的滑动scrollview"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="ZoomHeaderView"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

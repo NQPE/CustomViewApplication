@@ -1,4 +1,4 @@
-package com.hx100.levi.customviewapplication.customview.recyclerviewpager;
+package com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager;
 
 import android.content.Context;
 import android.content.res.TypedArray;

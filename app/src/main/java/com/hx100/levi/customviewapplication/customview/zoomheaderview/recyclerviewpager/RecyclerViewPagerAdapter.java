@@ -1,4 +1,4 @@
-package com.hx100.levi.customviewapplication.customview.recyclerviewpager;
+package com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
