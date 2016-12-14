@@ -48,8 +48,8 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
                     finish();
                 }
                 if (status==ZoomHeaderView.STATUS_TOP){
-                    recyclerViewPager.setVisibility(View.GONE);
-                    nestedScrollView.findViewById(R.id.ll_header).setAlpha(1);
+                    recyclerViewPager.setVisibility(View.INVISIBLE);
+                    nestedScrollView.findViewById(R.id.ll_header).setVisibility(View.VISIBLE);
                 }
             }
         });
