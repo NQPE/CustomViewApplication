@@ -1,42 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ll_header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:alpha="0">
+    android:layout_marginRight="30dp"
+    android:layout_marginLeft="30dp"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:scaleType="fitXY"
         android:src="@drawable/pic2" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:padding="30dp">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="标题"
-            android:textColor="@android:color/black" />
-
+            android:textColor="@android:color/black"
+            android:text="标题"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="价格"
-            android:textColor="@android:color/black" />
-
+            android:textColor="@android:color/black"
+            android:text="价格"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textColor="@android:color/black"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="30dp"
-            android:text="购买"
-            android:textColor="@android:color/black" />
+            android:text="购买"/>
     </RelativeLayout>
 </LinearLayout>
