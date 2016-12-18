@@ -62,7 +62,8 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, View child, View directTargetChild, View target, int nestedScrollAxes) {
 //        return true;//这里返回true，才会接受到后续滑动事件。
         //只关心垂直事件
-        return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+//        return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+        return false;
     }
 
     @Override
@@ -71,6 +72,10 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
         LogUtil.i(TAG,"onNestedScroll dyConsumed=="+dyConsumed);
         LogUtil.i(TAG,"onNestedScroll dyUnconsumed=="+dyUnconsumed);
         if (dyConsumed==0&&dyUnconsumed<0){
+            if (isZoomHeaderViewTouch){
+                mDependency.getViewPager().setVisibility(View.VISIBLE);
+//                mDependency.setTranslationMove(dyUnconsumed);
+            }
 //            mDependency.getViewPager().setVisibility(View.VISIBLE);
 //            mDependency.startTranslation(mDependency.mMaxY+dyUnconsumed);
 //            target.setAlpha(1-Math.abs(dyUnconsumed)/mDependency.mMaxY);
@@ -84,7 +89,8 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
             //向下滑动
             if (dy < 0) {
                 isZoomHeaderViewTouch=true;
-                LogUtil.i(TAG,"onNestedPreScroll=="+isZoomHeaderViewTouch);
+                LogUtil.i(TAG,"onNestedPreScroll");
+//                mDependency.getViewPager().setVisibility(View.VISIBLE);
 //                LogUtil.i(TAG,"dy=="+dy);
 //                mDependency.getViewPager().setVisibility(View.VISIBLE);
 //                mDependency.startTranslation(mDependency.mMaxY-dy);
@@ -94,10 +100,6 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
 //                if (mDependency.getY() < 500) {
 //                    mDependency.restore(mDependency.getY());
 //                }
-            }else {
-                if (mDependency.status==ZoomHeaderView.STATUS_TOP){
-                    mDependency.getViewPager().setVisibility(View.INVISIBLE);
-                }
             }
         }
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
@@ -116,15 +118,20 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
                 LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_DOWN");
                     mDownY=ev.getRawY();
                     mDownX=ev.getRawX();
-                    LogUtil.i(TAG,"onInterceptTouchEvent mDownY=="+mDownY);
                 break;
             case MotionEvent.ACTION_MOVE:
-//                if (Math.abs(ev.getRawY()-mDownY)>mTouchSlop&&Math.abs(ev.getRawX()-mDownX)<mTouchSlop&&isZoomHeaderViewTouch){
-//                    LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_MOVE==true");
+                if (Math.abs(ev.getRawY()-mDownY)>mTouchSlop&&Math.abs(ev.getRawX()-mDownX)<mTouchSlop&&isZoomHeaderViewTouch){
+                    mDownY=ev.getRawY();
+                    mDependency.mDownGetY=mDependency.getY();
+                    mDependency.mDownY=ev.getRawY();
+//                    mDependency.getViewPager().setVisibility(View.VISIBLE);
+//                    mDependency.showViewPagerLayoutMove();
+                    LogUtil.i(TAG,"onInterceptTouchEvent==mDependency.getY()=="+mDependency.getY());
+//                    mDependency.onTouchEvent(ev);
 //                    return true;
-//                }
+                }
                 LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_MOVE");
-                LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_MOVE mDependency.getY()"+mDependency.getY());
+//                LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_MOVE mDependency.getY()"+mDependency.getY());
                 break;
             case MotionEvent.ACTION_UP:
                 LogUtil.i(TAG,"onInterceptTouchEvent==ACTION_UP");
@@ -147,17 +154,17 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View>{
                 break;
             case MotionEvent.ACTION_UP:
                 LogUtil.i(TAG,"onTouchEvent==ACTION_UP");
-                isZoomHeaderViewTouch=false;
-                mDependency.setAnimTranslationMove();
+//                isZoomHeaderViewTouch=false;
+//                mDependency.setAnimTranslationMove();
                 break;
         }
 //        LogUtil.i(TAG,"onTouchEvent=="+isZoomHeaderViewTouch);
-        LogUtil.i(TAG,"onTouchEvent...ev.getY()=="+ev.getY());
-        if (isZoomHeaderViewTouch){
-            float moveY = ev.getRawY() - mDownY;
-            LogUtil.i(TAG,"onTouchEvent...moveY=="+moveY);
-            mDependency.setTranslationMove(moveY);
-        }
+//        LogUtil.i(TAG,"onTouchEvent...ev.getY()=="+ev.getY());
+//        if (isZoomHeaderViewTouch){
+//            float moveY = ev.getRawY() - mDownY;
+//            LogUtil.i(TAG,"onTouchEvent...moveY=="+moveY);
+//            mDependency.onTouchEvent(ev);
+//        }
         return super.onTouchEvent(parent, child, ev);
     }
 }

@@ -38,7 +38,8 @@ public class ZoomHeaderView extends LinearLayout {
     float mLastX;
     float mLastY;
     float mDownX;
-    float mDownY;
+    public float mDownY;
+    public float mDownGetY;
     private float mTouchSlop;
     //viewpager距离ZoomHeaderView的高度
     public float mViewPagerTop;
@@ -121,6 +122,7 @@ public class ZoomHeaderView extends LinearLayout {
                 LogUtil.i(TAG, "onInterceptTouchEvent==ACTION_DOWN");
                 mDownY = ev.getRawY();
                 mDownX = ev.getRawX();
+                mDownGetY=getY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 LogUtil.i(TAG, "onInterceptTouchEvent==ACTION_MOVE");
@@ -167,11 +169,16 @@ public class ZoomHeaderView extends LinearLayout {
 
     public void setTranslationMove(float move) {
         startScrollListers(move);
+        LogUtil.i(TAG,"setTranslationMove getY()=="+getY());
+        LogUtil.i(TAG,"setTranslationMove move=="+move);
+//        LogUtil.i(TAG,"viewpager getY()=="+mViewPager.getY());
+//        LogUtil.i(TAG,"viewpager getLeft()=="+mViewPager.getLeft());
+//        LogUtil.i(TAG,"viewpager gettop()=="+mViewPager.getTop());
         if (getY() - mStartY < 0) {//viewpagager处于上部状态
-            setTranslationY(move);
-            setViewPagerLayoutMove();
+            setTranslationY(mDownGetY+move);
             LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
-            LogUtil.i(TAG,"viewpagager处于上部状态 move=="+move);
+            setViewPagerLayoutMove();
+//            LogUtil.i(TAG,"viewpagager处于上部状态 move=="+move);
         } else {//viewpagager处于在底部的状态
             setTranslationY(move);
         }
@@ -196,7 +203,7 @@ public class ZoomHeaderView extends LinearLayout {
         }
     }
 
-    private void startUpObjectAnimator(float first, final float last) {
+    private void startUpObjectAnimator(final float first, final float last) {
 //        ObjectAnimator//
 //                .ofFloat(this, "viewPagerLayout", first, last)//
 //                .setDuration(500)//
@@ -217,7 +224,7 @@ public class ZoomHeaderView extends LinearLayout {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                if (last == mMaxY) {
+                if (first>last) {
                     startStatusListers(STATUS_TOP);
                 } else {
                     startStatusListers(STATUS_NORMAL);
@@ -249,6 +256,8 @@ public class ZoomHeaderView extends LinearLayout {
                 if (first - last < 0) {
                     startStatusListers(STATUS_BOTTOM);
 //                    Toast.makeText(getContext(),"finish",Toast.LENGTH_SHORT).show();
+                }else {
+                    startStatusListers(STATUS_NORMAL);
                 }
             }
         });
@@ -293,5 +302,28 @@ public class ZoomHeaderView extends LinearLayout {
         mViewPager.layout(-(int) left * 2, (int) (mViewPagerTop - top), (int) (mViewPagerWidth + left * 2), (int) ((mViewPagerTop - top) + mViewPagerHeight));
 //        LogUtil.i(TAG,"mViewPager.getTranslationY()"+mViewPager.getTranslationY());
 //        LogUtil.i(TAG,"mViewPager.mViewPager.getY()"+mViewPager.getY());
+    }
+
+    public void showViewPagerLayoutMove() {
+        if (mViewPager == null) {
+            return;
+        }
+        mViewPager.setVisibility(VISIBLE);
+//        if (move > mMaxY) {
+//            move = mMaxY;
+//        }
+//        if (move < 0) {
+//            return;
+//        }
+        float move=mMaxY;
+        float left = viewPagerItemMarginHalf / 2;
+        left = (move / mMaxY) * left;
+        float top = (mViewPagerTop - mMaxY) * move / mMaxY;
+        mViewPager.layout(-(int) left * 2, (int) (mViewPagerTop - top), (int) (mViewPagerWidth + left * 2), (int) ((mViewPagerTop - top) + mViewPagerHeight));
+//        LogUtil.i(TAG,"mViewPager.getTranslationY()"+mViewPager.getTranslationY());
+//        LogUtil.i(TAG,"mViewPager.mViewPager.getY()"+mViewPager.getY());
+        LogUtil.i(TAG,"mViewPager getY()=="+mViewPager.getY());
+        LogUtil.i(TAG,"mViewPager getLeft()=="+mViewPager.getLeft());
+        LogUtil.i(TAG,"mViewPager gettop()=="+mViewPager.getTop());
     }
 }

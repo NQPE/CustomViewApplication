@@ -14,11 +14,13 @@ import com.hx100.levi.customviewapplication.R;
 import com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderView;
 import com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPager;
 import com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPagerAdapter;
+import com.hx100.levi.customviewapplication.utils.LogUtil;
 
 /**
  * Created by Levi on 2016/11/7.
  */
 public class ZoomHeaderActivity extends Activity implements View.OnClickListener{
+    public static final String TAG = "tag_ZoomHeaderActivity";
     ZoomHeaderView zoomHeaderView;
     RecyclerViewPager recyclerViewPager;
     NestedScrollView nestedScrollView;
@@ -48,7 +50,9 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
                     finish();
                 }
                 if (status==ZoomHeaderView.STATUS_TOP){
+                    LogUtil.i(TAG,"status==ZoomHeaderView.STATUS_TOP");
                     recyclerViewPager.setVisibility(View.INVISIBLE);
+//                    recyclerViewPager.setAlpha(0);
                     nestedScrollView.findViewById(R.id.ll_header).setVisibility(View.VISIBLE);
                 }
             }
