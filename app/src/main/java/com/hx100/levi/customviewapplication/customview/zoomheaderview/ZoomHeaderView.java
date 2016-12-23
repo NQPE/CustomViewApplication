@@ -5,7 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -45,7 +47,7 @@ public class ZoomHeaderView extends LinearLayout {
     public float mViewPagerTop;
     float mViewPagerWidth;
     float mViewPagerHeight;
-    float mStartY;
+    public float mStartY;
     float mViewWidth;
     float mViewHeight;
     float mMaxY = 200;
@@ -98,20 +100,24 @@ public class ZoomHeaderView extends LinearLayout {
         void onZoomHeaderStatusListener(ZoomHeaderView view, int status);
     }
 
+    boolean isFirst=true;
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        if (mViewPager != null) {
-            mViewPagerTop = mViewPager.getTop();
-            mViewPagerWidth = mViewPager.getWidth();
-            mViewPagerHeight = mViewPager.getHeight();
+        if (isFirst){
+            if (mViewPager != null) {
+                mViewPagerTop = mViewPager.getTop();
+                mViewPagerWidth = mViewPager.getWidth();
+                mViewPagerHeight = mViewPager.getHeight();
 //            LogUtil.i(TAG,"mViewPagerTop=="+mViewPagerTop);
+            }
+            mStartY = getY();
+            mViewWidth = getWidth();
+            mViewHeight = getHeight();
+            isFirst=false;
         }
-        mStartY = getY();
-        mViewWidth = getWidth();
-        mViewHeight = getHeight();
 //        LogUtil.i(TAG,"scrennheight=="+ ScreenUtils.getScreenHeight(getContext()));
-//        LogUtil.i(TAG,"height=="+this.getHeight());
+        LogUtil.i(TAG,"onLayout=="+getY());
 //        LogUtil.i(TAG,"viewpagerheight=="+mViewPager.getHeight());
     }
 
@@ -123,11 +129,15 @@ public class ZoomHeaderView extends LinearLayout {
                 mDownY = ev.getRawY();
                 mDownX = ev.getRawX();
                 mDownGetY=getY();
+//                LogUtil.i(TAG,"onInterceptTouchEvent mDownY=="+mDownY);
                 break;
             case MotionEvent.ACTION_MOVE:
                 LogUtil.i(TAG, "onInterceptTouchEvent==ACTION_MOVE");
 //                LogUtil.i(TAG,"ev.getY()-mDownY"+(ev.getY()-mDownY));
                 if (Math.abs(ev.getRawY() - mDownY) > mTouchSlop && Math.abs(ev.getRawX() - mDownX) < mTouchSlop) {
+//                    if (status==STATUS_TOP&&mViewPager!=null){
+//                        mViewPager.setVisibility(VISIBLE);
+//                    }
                     return true;
                 }
                 break;
@@ -178,6 +188,7 @@ public class ZoomHeaderView extends LinearLayout {
             setTranslationY(mDownGetY+move);
             LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
             setViewPagerLayoutMove();
+//            LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
 //            LogUtil.i(TAG,"viewpagager处于上部状态 move=="+move);
         } else {//viewpagager处于在底部的状态
             setTranslationY(move);
@@ -325,5 +336,48 @@ public class ZoomHeaderView extends LinearLayout {
         LogUtil.i(TAG,"mViewPager getY()=="+mViewPager.getY());
         LogUtil.i(TAG,"mViewPager getLeft()=="+mViewPager.getLeft());
         LogUtil.i(TAG,"mViewPager gettop()=="+mViewPager.getTop());
+    }
+
+    private static Bitmap createBitmap(View view, int width, int height, boolean needOnLayout) {
+        Bitmap bitmap = null;
+        if (view != null) {
+            view.clearFocus();
+            view.setPressed(false);
+
+            boolean willNotCache = view.willNotCacheDrawing();
+            view.setWillNotCacheDrawing(false);
+
+            // Reset the drawing cache background color to fully transparent
+            // for the duration of this operation
+            int color = view.getDrawingCacheBackgroundColor();
+            view.setDrawingCacheBackgroundColor(0);
+            float alpha = view.getAlpha();
+            view.setAlpha(1.0f);
+
+            if (color != 0) {
+                view.destroyDrawingCache();
+            }
+
+            int widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
+            int heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+            view.measure(widthSpec, heightSpec);
+            if (needOnLayout) {
+                view.layout(0, 0, width, height);
+            }
+            view.buildDrawingCache();
+            Bitmap cacheBitmap = view.getDrawingCache();
+            if (cacheBitmap == null) {
+                Log.e("view.ProcessImageToBlur", "failed getViewBitmap(" + view + ")",
+                        new RuntimeException());
+                return null;
+            }
+            bitmap = Bitmap.createBitmap(cacheBitmap);
+            // Restore the view
+            view.setAlpha(alpha);
+            view.destroyDrawingCache();
+            view.setWillNotCacheDrawing(willNotCache);
+            view.setDrawingCacheBackgroundColor(color);
+        }
+        return bitmap;
     }
 }

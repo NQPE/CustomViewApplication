@@ -16,4 +16,10 @@
         <attr name="rvp_flingFactor" format="float" />
         <attr name="rvp_singlePageFling" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="MultiScrollNumber">
+        <attr name="primary_number" format="integer"/>
+        <attr name="target_number" format="integer"/>
+        <attr name="number_size" format="integer"/>
+        <!--<attr name="number_color" format="color"/>-->
+    </declare-styleable>
 </resources>

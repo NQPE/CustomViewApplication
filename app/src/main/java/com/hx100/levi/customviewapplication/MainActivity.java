@@ -11,6 +11,7 @@ import com.hx100.levi.customviewapplication.activity.CutomView1Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView2Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView3Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView4Activity;
+import com.hx100.levi.customviewapplication.activity.CutomView5Activity;
 import com.hx100.levi.customviewapplication.utils.SimpleUtils;
 
 
@@ -28,6 +29,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         findViewById(R.id.btn_customview2).setOnClickListener(this);
         findViewById(R.id.btn_customview3).setOnClickListener(this);
         findViewById(R.id.btn_customview4).setOnClickListener(this);
+        findViewById(R.id.btn_customview5).setOnClickListener(this);
     }
 
     @Override
@@ -44,6 +46,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.btn_customview4:
                 SimpleUtils.skipActivity(this,CutomView4Activity.class);
+                break;
+            case R.id.btn_customview5:
+                SimpleUtils.skipActivity(this,CutomView5Activity.class);
                 break;
 
         }

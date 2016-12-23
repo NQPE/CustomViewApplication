@@ -20,6 +20,7 @@
         <activity android:name=".activity.CutomView2Activity"></activity>
         <activity android:name=".activity.CutomView3Activity"></activity>
         <activity android:name=".activity.CutomView4Activity"></activity>
+        <activity android:name=".activity.CutomView5Activity"></activity>
         <activity
             android:name=".activity.ZoomHeaderActivity"
             android:theme="@style/translucent"></activity>

@@ -11,11 +11,11 @@
         android:layout_height="match_parent"
         android:background="#f1f1f1"
         app:layout_behavior="com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderBehavior"
-        android:alpha="0">
+        android:alpha="1">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <include layout="@layout/item_header" />
