@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#f1f1f1"
-        app:layout_behavior="com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderBehavior"
-        android:alpha="1">
+        app:layout_behavior="com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,7 +72,8 @@
             android:layout_width="match_parent"
             android:layout_marginTop="100dp"
             android:layout_height="wrap_content"
-            app:rvp_singlePageFling="true">
+            app:rvp_singlePageFling="true"
+            android:clipChildren="false">
 
         </com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPager>
     </com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderView>

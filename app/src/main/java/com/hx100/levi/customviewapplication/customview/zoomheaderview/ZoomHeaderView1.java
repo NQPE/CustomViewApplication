@@ -2,7 +2,6 @@ package com.hx100.levi.customviewapplication.customview.zoomheaderview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,16 +10,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.hx100.levi.customviewapplication.R;
 import com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPager;
-import com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.ViewUtils;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
-import com.hx100.levi.customviewapplication.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +21,7 @@ import java.util.List;
 /**
  * Created by Levi on 2016/12/13.
  */
-public class ZoomHeaderView extends FrameLayout {
+public class ZoomHeaderView1 extends FrameLayout {
     public static final String TAG = "tag_ZoomHeaderView";
     //正常的状态
     public static final int STATUS_NORMAL = 1000;
@@ -56,29 +49,36 @@ public class ZoomHeaderView extends FrameLayout {
     //viewpager的item的margin 方便移动时计算
     private int viewPagerItemMarginHalf = 90;
 
-    float mInitTranslationY;
-    float mCurrentTranslationY;
-
-    public ZoomHeaderView(Context context) {
+    private View mTemp;
+    public ZoomHeaderView1(Context context) {
         this(context, null);
     }
 
-    public ZoomHeaderView(Context context, AttributeSet attrs) {
+    public ZoomHeaderView1(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ZoomHeaderView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ZoomHeaderView1(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        LogUtil.i(TAG,"onWindowFocusChanged");
+    }
+
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+//        LogUtil.i("count=="+getChildCount());
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mListeners = new ArrayList<>();
+//        LogUtil.i(TAG,"mTouchSlop=="+mTouchSlop);
     }
 
     public void setViewPager(RecyclerViewPager viewPager) {
         this.mViewPager = viewPager;
+//        setViewPagerOnZoomHeaderScrollListener();
     }
 
     public void setViewPagerItemMarginHalf(int marginLeft) {
@@ -97,9 +97,9 @@ public class ZoomHeaderView extends FrameLayout {
     }
 
     public interface OnZoomHeaderScrollListener {
-        void onZoomHeaderScrollListener(ZoomHeaderView view, float move);
+        void onZoomHeaderScrollListener(ZoomHeaderView1 view, float move);
 
-        void onZoomHeaderStatusListener(ZoomHeaderView view, int status);
+        void onZoomHeaderStatusListener(ZoomHeaderView1 view, int status);
     }
 
     boolean isFirst=true;
@@ -111,21 +111,15 @@ public class ZoomHeaderView extends FrameLayout {
                 mViewPagerTop = mViewPager.getTop();
                 mViewPagerWidth = mViewPager.getWidth();
                 mViewPagerHeight = mViewPager.getHeight();
-            LogUtil.i(TAG,"mViewPagerTop=="+mViewPagerTop);
-            LogUtil.i(TAG,"mViewPagerWidth=="+mViewPagerWidth);
-            LogUtil.i(TAG,"mViewPagerHeight=="+mViewPagerHeight);
+//            LogUtil.i(TAG,"mViewPagerTop=="+mViewPagerTop);
             }
             mStartY = getY();
-            mInitTranslationY=getTranslationY();
             mViewWidth = getWidth();
             mViewHeight = getHeight();
-            LogUtil.i(TAG,"mInitTranslationY=="+mInitTranslationY);
-            LogUtil.i(TAG,"mViewWidth=="+mViewWidth);
-            LogUtil.i(TAG,"mViewHeight=="+mViewHeight);
             isFirst=false;
         }
 //        LogUtil.i(TAG,"scrennheight=="+ ScreenUtils.getScreenHeight(getContext()));
-        LogUtil.i(TAG,"onLayout");
+        LogUtil.i(TAG,"onLayout=="+getY());
 //        LogUtil.i(TAG,"viewpagerheight=="+mViewPager.getHeight());
     }
 
@@ -142,12 +136,16 @@ public class ZoomHeaderView extends FrameLayout {
                 LogUtil.i(TAG, "onInterceptTouchEvent==ACTION_DOWN");
                 mDownY = ev.getRawY();
                 mDownX = ev.getRawX();
+                mDownGetY=getY();
+//                LogUtil.i(TAG,"onInterceptTouchEvent mDownY=="+mDownY);
                 break;
             case MotionEvent.ACTION_MOVE:
                 LogUtil.i(TAG, "onInterceptTouchEvent==ACTION_MOVE");
+//                LogUtil.i(TAG,"ev.getY()-mDownY"+(ev.getY()-mDownY));
                 if (Math.abs(ev.getRawY() - mDownY) > mTouchSlop && Math.abs(ev.getRawX() - mDownX) < mTouchSlop) {
-                    mCurrentTranslationY=getTranslationY();
-                    mLastY=ev.getRawY();
+//                    if (status==STATUS_TOP&&mViewPager!=null){
+//                        mViewPager.setVisibility(VISIBLE);
+//                    }
                     return true;
                 }
                 break;
@@ -167,13 +165,12 @@ public class ZoomHeaderView extends FrameLayout {
                 break;
             case MotionEvent.ACTION_MOVE:
                 LogUtil.i(TAG, "onTouchEvent==ACTION_MOVE");
-                float moveY = ev.getRawY() - mLastY;
-                mLastY=ev.getRawY();
-                setTranslationMove(moveY);
+                float moveY = ev.getRawY() - mDownY;
+                float currentY = getY();
 //                setTranslationY(currentY + moveY);
 //                translationViewPager(this, ev);
 //                startScrollListers(moveY);
-//                setTranslationMove(moveY);
+                setTranslationMove(moveY);
 //                LogUtil.i(TAG, "moveY==" + moveY);
 //                LogUtil.i(TAG, "currentY==" + currentY);
 //                LogUtil.i(TAG, "setTranslationY==" + (currentY + moveY));
@@ -181,7 +178,7 @@ public class ZoomHeaderView extends FrameLayout {
             case MotionEvent.ACTION_UP:
                 LogUtil.i(TAG, "onTouchEvent==ACTION_UP");
 //                startAnimTranslation(getY() - mStartY);
-//                setAnimTranslationMove();
+                setAnimTranslationMove();
                 break;
         }
         return super.onTouchEvent(ev);
@@ -190,23 +187,20 @@ public class ZoomHeaderView extends FrameLayout {
 
     public void setTranslationMove(float move) {
         startScrollListers(move);
+        LogUtil.i(TAG,"setTranslationMove getY()=="+getY());
         LogUtil.i(TAG,"setTranslationMove move=="+move);
-        LogUtil.i(TAG,"setTranslationMove mCurrentTranslationY=="+mCurrentTranslationY);
-        mCurrentTranslationY+=move;
-        setTranslationY(mCurrentTranslationY);
-        setViewPagerLayoutMove();
 //        LogUtil.i(TAG,"viewpager getY()=="+mViewPager.getY());
 //        LogUtil.i(TAG,"viewpager getLeft()=="+mViewPager.getLeft());
 //        LogUtil.i(TAG,"viewpager gettop()=="+mViewPager.getTop());
-//        if (getY() - mStartY < 0) {//viewpagager处于上部状态
-//            setTranslationY(mDownGetY+move);
+        if (getY() - mStartY < 0) {//viewpagager处于上部状态
+            setTranslationY(mDownGetY+move);
+            LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
+            setViewPagerLayoutMove();
 //            LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
-//            setViewPagerLayoutMove();
-////            LogUtil.i(TAG,"viewpagager处于上部状态 getY()=="+getY());
-////            LogUtil.i(TAG,"viewpagager处于上部状态 move=="+move);
-//        } else {//viewpagager处于在底部的状态
-//            setTranslationY(move);
-//        }
+//            LogUtil.i(TAG,"viewpagager处于上部状态 move=="+move);
+        } else {//viewpagager处于在底部的状态
+            setTranslationY(move);
+        }
 //        if (move <= 0) {//向上滑动
 //        } else {//向下滑动
 //        }
@@ -317,8 +311,7 @@ public class ZoomHeaderView extends FrameLayout {
 //        if (move < 0) {
 //            return;
 //        }
-        if (mCurrentTranslationY-mInitTranslationY>0)return;
-        float move=Math.abs(mCurrentTranslationY-mInitTranslationY);
+        float move=Math.abs(getY()-mStartY);
         if (move>mMaxY){
             move=mMaxY;
         }
@@ -373,8 +366,8 @@ public class ZoomHeaderView extends FrameLayout {
                 view.destroyDrawingCache();
             }
 
-            int widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
-            int heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
+            int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+            int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
             view.measure(widthSpec, heightSpec);
             if (needOnLayout) {
                 view.layout(0, 0, width, height);
