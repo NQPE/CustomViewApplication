@@ -56,7 +56,6 @@ public class ZoomHeaderView extends FrameLayout {
     //viewpager的item的margin 方便移动时计算
     private int viewPagerItemMarginHalf = 90;
 
-    float mInitTranslationY;
     float mCurrentTranslationY;
 
     public ZoomHeaderView(Context context) {
@@ -116,10 +115,8 @@ public class ZoomHeaderView extends FrameLayout {
             LogUtil.i(TAG,"mViewPagerHeight=="+mViewPagerHeight);
             }
             mStartY = getY();
-            mInitTranslationY=getTranslationY();
             mViewWidth = getWidth();
             mViewHeight = getHeight();
-            LogUtil.i(TAG,"mInitTranslationY=="+mInitTranslationY);
             LogUtil.i(TAG,"mViewWidth=="+mViewWidth);
             LogUtil.i(TAG,"mViewHeight=="+mViewHeight);
             isFirst=false;
@@ -181,7 +178,7 @@ public class ZoomHeaderView extends FrameLayout {
             case MotionEvent.ACTION_UP:
                 LogUtil.i(TAG, "onTouchEvent==ACTION_UP");
 //                startAnimTranslation(getY() - mStartY);
-//                setAnimTranslationMove();
+                setAnimTranslationMove();
                 break;
         }
         return super.onTouchEvent(ev);
@@ -193,6 +190,9 @@ public class ZoomHeaderView extends FrameLayout {
         LogUtil.i(TAG,"setTranslationMove move=="+move);
         LogUtil.i(TAG,"setTranslationMove mCurrentTranslationY=="+mCurrentTranslationY);
         mCurrentTranslationY+=move;
+        if (mCurrentTranslationY<=-mMaxY){
+            mCurrentTranslationY=-mMaxY;
+        }
         setTranslationY(mCurrentTranslationY);
         setViewPagerLayoutMove();
 //        LogUtil.i(TAG,"viewpager getY()=="+mViewPager.getY());
@@ -213,27 +213,100 @@ public class ZoomHeaderView extends FrameLayout {
     }
 
     public void setAnimTranslationMove(){
-        if (getY() - mStartY < 0) {//viewpagager处于上部状态
-            if (Math.abs(getY() - mStartY)>mMaxY/2){//viewpagager上部状态向上滑动
-                startUpObjectAnimator(getY() - mStartY, -mMaxY);
-            }else {//viewpagager上部状态向下滑动
-                startUpObjectAnimator(getY() - mStartY, 0);
-            }
-        } else {//viewpagager处于在底部的状态
-            if (Math.abs(getY() - mStartY)>mMaxY/2){//viewpagager底部状态向下滑动
-                startDownObjectAnimator(getY() - mStartY, mViewHeight);
-            }else {//viewpagager底部状态向上滑动
-                startDownObjectAnimator(getY() - mStartY, 0);
-            }
+//        if (getY() - mStartY < 0) {//viewpagager处于上部状态
+//            if (Math.abs(getY() - mStartY)>mMaxY/2){//viewpagager上部状态向上滑动
+//                startUpObjectAnimator(getY() - mStartY, -mMaxY);
+//            }else {//viewpagager上部状态向下滑动
+//                startUpObjectAnimator(getY() - mStartY, 0);
+//            }
+//        } else {//viewpagager处于在底部的状态
+//            if (Math.abs(getY() - mStartY)>mMaxY/2){//viewpagager底部状态向下滑动
+//                startDownObjectAnimator(getY() - mStartY, mViewHeight);
+//            }else {//viewpagager底部状态向上滑动
+//                startDownObjectAnimator(getY() - mStartY, 0);
+//            }
+//        }
+        //0 viewpagager上部状态向上滑动 1：viewpagager上部状态向下滑动
+        //2 viewpagager底部状态向下滑动 3：viewpagager底部状态向上滑动
+        int type=0;
+        if (mCurrentTranslationY<=0){
+            type=Math.abs(mCurrentTranslationY)>mMaxY/2?0:1;
+        }else {
+            type=Math.abs(mCurrentTranslationY)>mMaxY?2:3;
         }
+        final ValueAnimator animator = ValueAnimator.ofFloat(0, 500);
+        animator.setTarget(this);
+        animator.setDuration(500).start();
+        final int finalType = type;
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+//                setTranslationY(-(Float) animation.getAnimatedValue());
+//                setViewPagerLayout((Float) animation.getAnimatedValue());
+//                setTranslationMove((Float) animation.getAnimatedValue());
+                switch (finalType){
+                    case 0:
+                        if (mCurrentTranslationY<=-mMaxY){
+//                            setTranslationMove(0);
+                            return;
+                        }
+                        setTranslationMove(-7);
+                        break;
+                    case 1:
+                        if (mCurrentTranslationY>=-7){
+                            mCurrentTranslationY=0;
+//                            setTranslationMove(0);
+                            return;
+                        }
+                        setTranslationMove(7);
+                        break;
+                    case 2:
+                        setTranslationMove((mViewHeight-mMaxY)/16);
+                        break;
+                    case 3:
+                        if (mCurrentTranslationY<=7){
+                            mCurrentTranslationY=0;
+//                            setTranslationMove(0);
+                            return;
+                        }
+                        setTranslationMove(-7);
+                        break;
+                }
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                setTranslationMove(0);
+                switch (finalType){
+                    case 0:
+                        startStatusListers(STATUS_TOP);
+                        break;
+                    case 1:
+                        startStatusListers(STATUS_NORMAL);
+                        break;
+                    case 2:
+                        startStatusListers(STATUS_BOTTOM);
+                        break;
+                    case 3:
+                        startStatusListers(STATUS_NORMAL);
+                        break;
+                }
+//                if (first>last) {
+//                    startStatusListers(STATUS_TOP);
+//                } else {
+//                    startStatusListers(STATUS_NORMAL);
+//                }
+            }
+        });
     }
-
     private void startUpObjectAnimator(final float first, final float last) {
 //        ObjectAnimator//
 //                .ofFloat(this, "viewPagerLayout", first, last)//
 //                .setDuration(500)//
 //                .start();
-        ValueAnimator animator = ValueAnimator.ofFloat(first, last);
+        final ValueAnimator animator = ValueAnimator.ofFloat(first, last);
         animator.setTarget(this);
         animator.setDuration(500).start();
 //      animator.setInterpolator(value)
@@ -242,18 +315,18 @@ public class ZoomHeaderView extends FrameLayout {
             public void onAnimationUpdate(ValueAnimator animation) {
 //                setTranslationY(-(Float) animation.getAnimatedValue());
 //                setViewPagerLayout((Float) animation.getAnimatedValue());
-                setTranslationMove((Float) animation.getAnimatedValue());
+//                setTranslationMove((Float) animation.getAnimatedValue());
             }
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                if (first>last) {
-                    startStatusListers(STATUS_TOP);
-                } else {
-                    startStatusListers(STATUS_NORMAL);
-                }
+//                if (first>last) {
+//                    startStatusListers(STATUS_TOP);
+//                } else {
+//                    startStatusListers(STATUS_NORMAL);
+//                }
             }
         });
     }
@@ -317,8 +390,8 @@ public class ZoomHeaderView extends FrameLayout {
 //        if (move < 0) {
 //            return;
 //        }
-        if (mCurrentTranslationY-mInitTranslationY>0)return;
-        float move=Math.abs(mCurrentTranslationY-mInitTranslationY);
+        if (mCurrentTranslationY>0)return;
+        float move=Math.abs(mCurrentTranslationY);
         if (move>mMaxY){
             move=mMaxY;
         }
