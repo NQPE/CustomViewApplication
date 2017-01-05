@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 
 import com.hx100.levi.customviewapplication.R;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
@@ -41,7 +42,6 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
         LogUtil.i(TAG, "onDependentViewChanged child.getHeight()=="+child.getHeight());
 //        ViewCompat.offsetTopAndBottom(child, (int)dependency.getY()+dependency.getHeight());
         child.setTranslationY(dependency.getY()+dependency.getHeight());
-        ((NestedScrollView)child).computeScroll();
 //        child.scrollTo(0, -(int)dependency.getY()+dependency.getHeight());
 //        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
 //        child.invalidate();
@@ -64,12 +64,13 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
         return true;
     }
 
-//    @Override
-//    public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
-//        LogUtil.i(TAG, "onLayoutChild child.getHeight()=="+child.getHeight());
-//        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
-//        return true;
-//    }
+    @Override
+    public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
+        LogUtil.i(TAG, "onLayoutChild ");
+//        ((CoordinatorLayout.LayoutParams)child.getLayoutParams()).topMargin=1500;
+        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
+        return false;
+    }
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, View child, View directTargetChild, View target, int nestedScrollAxes) {

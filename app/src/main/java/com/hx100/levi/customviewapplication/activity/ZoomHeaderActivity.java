@@ -34,7 +34,6 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
     private void init() {
         zoomHeaderView= (ZoomHeaderView) findViewById(R.id.zoomHeaderView);
         nestedScrollView= (NestedScrollView) findViewById(R.id.nestedScrollView);
-        nestedScrollView.setTranslationY(1527);
         recyclerViewPager= (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
         recyclerViewPager.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         recyclerViewPager.setAdapter(new RecyclerViewPagerAdapter(recyclerViewPager,new ViewpagerAdapter()));
