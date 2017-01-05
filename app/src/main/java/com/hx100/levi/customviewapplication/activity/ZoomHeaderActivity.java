@@ -34,6 +34,7 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
     private void init() {
         zoomHeaderView= (ZoomHeaderView) findViewById(R.id.zoomHeaderView);
         nestedScrollView= (NestedScrollView) findViewById(R.id.nestedScrollView);
+        nestedScrollView.setTranslationY(1527);
         recyclerViewPager= (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
         recyclerViewPager.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         recyclerViewPager.setAdapter(new RecyclerViewPagerAdapter(recyclerViewPager,new ViewpagerAdapter()));
@@ -51,9 +52,11 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
                 }
                 if (status==ZoomHeaderView.STATUS_TOP){
                     LogUtil.i(TAG,"status==ZoomHeaderView.STATUS_TOP");
-                    recyclerViewPager.setVisibility(View.INVISIBLE);
+//                    recyclerViewPager.setVisibility(View.INVISIBLE);
 //                    recyclerViewPager.setAlpha(0);
-                    nestedScrollView.findViewById(R.id.ll_header).setVisibility(View.VISIBLE);
+//                    zoomHeaderView.setVisibility(View.GONE);
+//                    nestedScrollView.findViewById(R.id.ll_header).setVisibility(View.VISIBLE);
+//                    nestedScrollView.bringToFront();
                 }
             }
         });

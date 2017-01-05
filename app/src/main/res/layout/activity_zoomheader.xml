@@ -2,22 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_zoomheader"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipChildren="false">
+    android:layout_height="match_parent">
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#f1f1f1"
-        app:layout_behavior="com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderBehavior">
+       >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include layout="@layout/item_header" />
+            <!--<include layout="@layout/item_header" />-->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -64,16 +63,16 @@
     <com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderView
         android:id="@+id/zoomHeaderView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPager
             android:id="@+id/recyclerViewPager"
             android:layout_width="match_parent"
-            android:layout_marginTop="100dp"
             android:layout_height="wrap_content"
-            app:rvp_singlePageFling="true"
-            android:clipChildren="false">
+            android:layout_marginTop="100dp"
+            android:clipChildren="false"
+            app:rvp_singlePageFling="true">
 
         </com.hx100.levi.customviewapplication.customview.zoomheaderview.recyclerviewpager.RecyclerViewPager>
     </com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderView>
