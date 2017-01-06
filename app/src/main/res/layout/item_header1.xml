@@ -8,6 +8,7 @@
 
     <ImageView
         android:layout_width="match_parent"
+        android:layout_marginTop="100dp"
         android:layout_height="300dp"
         android:scaleType="fitXY"
         android:src="@drawable/pic2" />

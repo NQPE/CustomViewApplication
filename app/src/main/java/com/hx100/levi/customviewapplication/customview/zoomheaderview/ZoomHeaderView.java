@@ -168,6 +168,16 @@ public class ZoomHeaderView extends LinearLayout {
                 float moveY = ev.getRawY() - mLastY;
                 mLastY=ev.getRawY();
                 setTranslationMove(moveY);
+                if (mCurrentTranslationY<=-mMaxY){
+                    setVisibility(GONE);
+                    // 重新dispatch一次down事件，使得列表可以继续滚动
+                    int oldAction = ev.getAction();
+                    ev.setLocation(ev.getRawX(),ev.getRawY());
+                    ev.setAction(MotionEvent.ACTION_DOWN);
+                    ((ViewGroup)getParent()).dispatchTouchEvent(ev);
+                    ev.setAction(oldAction);
+//                    return true;
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 LogUtil.i(TAG, "onTouchEvent==ACTION_UP");
@@ -244,7 +254,6 @@ public class ZoomHeaderView extends LinearLayout {
                 switch (finalType){
                     case 0:
                         startStatusListers(STATUS_TOP);
-
                         break;
                     case 1:
                         startStatusListers(STATUS_NORMAL);
@@ -291,9 +300,12 @@ public class ZoomHeaderView extends LinearLayout {
         float left = viewPagerItemMarginHalf / 2;
         left = (move / mMaxY) * left;
         float top = (mViewPagerTop - mMaxY) * move / mMaxY;
-        LogUtil.i("top=="+top);
-        View temp=((ViewGroup)mViewPager.getChildAt(mViewPager.getCurrentPosition())).getChildAt(0);
+//        LogUtil.i("top=="+top);
+        View temp=((ViewGroup)mViewPager.getChildAt(0)).getChildAt(0);
 //        temp.layout(0, (int) (0-top),temp.getWidth(), (int) (temp.getHeight()-top));
+        temp.setPivotY(temp.getHeight());
+//        LogUtil.i("temp.getHeight()=="+temp.getHeight());
+        temp.setScaleY((float) (1-(top/mMaxY)*0.11));
         mViewPager.layout(-(int) left * 2, (int) (mViewPagerTop ), (int) (mViewPagerWidth + left * 2), (int) ((mViewPagerTop ) + mViewPagerHeight));
 //        LogUtil.i(TAG,"mViewPager.getTranslationY()"+mViewPager.getTranslationY());
 //        LogUtil.i(TAG,"mViewPager.mViewPager.getY()"+mViewPager.getY());

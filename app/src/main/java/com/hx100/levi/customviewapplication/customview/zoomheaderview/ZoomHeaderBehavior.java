@@ -41,7 +41,8 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
         LogUtil.i(TAG, "onDependentViewChanged mDependency.getHeight()=="+mDependency.getHeight() );
         LogUtil.i(TAG, "onDependentViewChanged child.getHeight()=="+child.getHeight());
 //        ViewCompat.offsetTopAndBottom(child, (int)dependency.getY()+dependency.getHeight());
-        child.setTranslationY(dependency.getY()+dependency.getHeight());
+//        child.setTranslationY(dependency.getY()+dependency.getHeight());
+//        ((ViewGroup)child).getChildAt(0).setTranslationY(dependency.getY()+dependency.getHeight());
 //        child.scrollTo(0, -(int)dependency.getY()+dependency.getHeight());
 //        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
 //        child.invalidate();
@@ -50,27 +51,30 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
             float alpha = Math.abs(dependency.getY()) / ((ZoomHeaderView) dependency).mMaxY;
             if (alpha > 0.95) {
                 alpha = 1;
+                child.findViewById(R.id.ll_header).setVisibility(View.VISIBLE);
 //                isZoomHeaderViewTouch=false;
+            }else {
+                child.findViewById(R.id.ll_header).setVisibility(View.INVISIBLE);
             }
             if (alpha < 0.01) {
                 alpha = 0;
             }
 //            LogUtil.i(TAG,"alpha=="+alpha);
-//            child.findViewById(R.id.ll_header).setVisibility(View.INVISIBLE);
+
             //recyclerView Top始终处于ZoomHeaderView bottom
 //            child.setY(dependency.getY() + dependency.getHeight());
-//            child.setAlpha(alpha);
+            child.setAlpha(alpha);
         }
         return true;
     }
 
-    @Override
-    public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
-        LogUtil.i(TAG, "onLayoutChild ");
-//        ((CoordinatorLayout.LayoutParams)child.getLayoutParams()).topMargin=1500;
-        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
-        return false;
-    }
+//    @Override
+//    public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
+//        LogUtil.i(TAG, "onLayoutChild ");
+////        ((CoordinatorLayout.LayoutParams)child.getLayoutParams()).topMargin=1500;
+//        child.layout(0,(int)mDependency.getY()+mDependency.getHeight(),child.getWidth(),(int)mDependency.getY()+mDependency.getHeight()+child.getHeight());
+//        return false;
+//    }
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, View child, View directTargetChild, View target, int nestedScrollAxes) {
@@ -94,7 +98,7 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
         }
 //        if (isInterceptScroll) {
 //            LogUtil.i(TAG, "onNestedScroll isInterceptScroll");
-//            mDependency.getViewPager().setVisibility(View.VISIBLE);
+//            mDependency.setVisibility(View.VISIBLE);
 //            mDependency.setTranslationMove(-dyUnconsumed);
 //        }
     }
@@ -112,14 +116,14 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
             LogUtil.i(TAG, "onNestedPreScroll !isInterceptPreScroll && !canViewScrollUp(target) && dy < 0 ");
             isInterceptPreScroll = true;
         }
-//        if (isInterceptPreScroll) {
-//            LogUtil.i(TAG, "onNestedPreScroll isInterceptPreScroll");
-//            consumed[1] = dy;
-//            mDependency.setVisibility(View.VISIBLE);
-////            mDependency.bringToFront();
-//            mDependency.setTranslationMove(isInterceptScroll?-dy:currentY - dy);
-//            currentY = dy;
-//        }
+        if (isInterceptPreScroll) {
+            LogUtil.i(TAG, "onNestedPreScroll isInterceptPreScroll");
+            consumed[1] = dy;
+            mDependency.setVisibility(View.VISIBLE);
+//            mDependency.bringToFront();
+            mDependency.setTranslationMove(isInterceptScroll?-dy:currentY - dy);
+            currentY = dy;
+        }
 
     }
 
@@ -131,9 +135,9 @@ public class ZoomHeaderBehavior extends CoordinatorLayout.Behavior<View> {
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target) {
         super.onStopNestedScroll(coordinatorLayout, child, target);
         LogUtil.i(TAG, "onStopNestedScroll");
-//        if (isInterceptScroll||isInterceptPreScroll){
-//            mDependency.setAnimTranslationMove();
-//        }
+        if (isInterceptScroll||isInterceptPreScroll){
+            mDependency.setAnimTranslationMove();
+        }
         if (isInterceptScroll) {
             isInterceptScroll = false;
         }

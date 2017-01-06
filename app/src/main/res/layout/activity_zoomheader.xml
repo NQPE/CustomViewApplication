@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#f1f1f1"
+        android:alpha="0"
         app:layout_behavior="com.hx100.levi.customviewapplication.customview.zoomheaderview.ZoomHeaderBehavior"
        >
 
@@ -17,7 +18,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <!--<include layout="@layout/item_header" />-->
+            <include layout="@layout/item_header" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -71,7 +72,6 @@
             android:id="@+id/recyclerViewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
             android:clipChildren="false"
             app:rvp_singlePageFling="true">
 

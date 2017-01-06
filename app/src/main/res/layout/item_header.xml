@@ -6,11 +6,11 @@
     android:orientation="vertical"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:visibility="invisible">
+    android:visibility="visible">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="333dp"
         android:scaleType="fitXY"
         android:src="@drawable/pic2" />
 

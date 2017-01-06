@@ -51,6 +51,7 @@ public class ZoomHeaderActivity extends Activity implements View.OnClickListener
                 }
                 if (status==ZoomHeaderView.STATUS_TOP){
                     LogUtil.i(TAG,"status==ZoomHeaderView.STATUS_TOP");
+                    zoomHeaderView.setVisibility(View.GONE);
 //                    recyclerViewPager.setVisibility(View.INVISIBLE);
 //                    recyclerViewPager.setAlpha(0);
 //                    zoomHeaderView.setVisibility(View.GONE);
