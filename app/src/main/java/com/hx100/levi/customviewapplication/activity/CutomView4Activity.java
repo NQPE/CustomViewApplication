@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hx100.levi.customviewapplication.R;
+import com.hx100.levi.customviewapplication.customview.ShoppingView;
 
 /**
  * Created by Levi on 2016/11/7.
@@ -48,6 +49,9 @@ public class CutomView4Activity extends Activity {
                     overridePendingTransition(0, 0);
                 }
             });
+            if (holder.sv_item!=null){
+                holder.sv_item.setTextNum(position);
+            }
         }
 
         @Override
@@ -56,9 +60,10 @@ public class CutomView4Activity extends Activity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-
+            ShoppingView sv_item;
             public ViewHolder(View view) {
                 super(view);
+                sv_item= (ShoppingView) findViewById(R.id.sv_item);
             }
         }
 

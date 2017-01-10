@@ -75,6 +75,26 @@
                 android:text="ZoomHeaderView"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="ItemHelpTouchDemo"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="DragPhotoView"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

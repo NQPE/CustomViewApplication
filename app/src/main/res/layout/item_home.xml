@@ -50,6 +50,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="火锅" />
+            <com.hx100.levi.customviewapplication.customview.ShoppingView
+                android:id="@+id/sv_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </LinearLayout>

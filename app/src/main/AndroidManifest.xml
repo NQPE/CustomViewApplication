@@ -21,9 +21,16 @@
         <activity android:name=".activity.CutomView3Activity"></activity>
         <activity android:name=".activity.CutomView4Activity"></activity>
         <activity android:name=".activity.CutomView5Activity"></activity>
+        <activity android:name=".itemtouchhelperdemo.demochannel.ChannelActivity"></activity>
+        <activity android:name=".itemtouchhelperdemo.demodrag.DragActivity"></activity>
+        <activity android:name=".itemtouchhelperdemo.ItemTouchHelperDemoActivity"></activity>
+        <activity
+            android:name=".dragphotoviewdemo.DragPhotoActivity"
+            android:theme="@style/translucent"></activity>
+        <activity android:name=".dragphotoviewdemo.DragPhotoDemoActivity"></activity>
         <activity
             android:name=".activity.ZoomHeaderActivity"
-            android:theme="@style/translucent"></activity>
+            android:theme="@style/half_translucent"></activity>
     </application>
 
 </manifest>
