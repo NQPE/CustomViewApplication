@@ -95,6 +95,26 @@
                 android:text="DragPhotoView"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="自定义DragPhotoView"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn_customview9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="hook练习"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

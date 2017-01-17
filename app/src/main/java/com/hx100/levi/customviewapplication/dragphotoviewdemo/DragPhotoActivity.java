@@ -2,6 +2,7 @@ package com.hx100.levi.customviewapplication.dragphotoviewdemo;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -13,6 +14,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.hx100.levi.customviewapplication.R;
+import com.hx100.levi.customviewapplication.utils.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +40,13 @@ public class DragPhotoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_drag_photo);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+//        }
+//        StatusBarUtil.setColor(this, Color.parseColor("#00000000"));
+        StatusBarUtil.setTranslucent(this);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
 
         mList = new ArrayList<>();
@@ -56,7 +59,7 @@ public class DragPhotoActivity extends AppCompatActivity {
 
         for (int i = 0; i < mPhotoViews.length; i++) {
             mPhotoViews[i] = (DragPhotoView) View.inflate(this, R.layout.item_viewpager, null);
-            mPhotoViews[i].setImageResource(R.drawable.wugeng);
+            mPhotoViews[i].setImageResource(R.drawable.pic3);
             mPhotoViews[i].setOnTapListener(new DragPhotoView.OnTapListener() {
                 @Override
                 public void onTap(DragPhotoView view) {
