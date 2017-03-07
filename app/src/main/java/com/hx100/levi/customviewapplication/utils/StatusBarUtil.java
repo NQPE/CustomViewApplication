@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.CoordinatorLayout;
@@ -11,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.hx100.levi.customviewapplication.R;
@@ -26,6 +28,47 @@ public class StatusBarUtil {
     public static final int DEFAULT_STATUS_BAR_ALPHA = 112;
     public static final int FAKE_STATUS_BAR_VIEW_ID = R.id.statusbarutil_fake_status_bar_view;
     public static final int FAKE_TRANSLUCENT_VIEW_ID = R.id.statusbarutil_translucent_view;
+
+    /**
+     * 为头部是 Toolbar的Drawable 的界面设置状态栏透明
+     * 并且将Drawable延伸至状态栏 而且自动完成状态栏高度的处理
+     *
+     * @param activity       需要设置的activity
+     * @param statusBarAlpha 状态栏透明度
+     * @param drawableview   需要延伸至状态栏的drawableview 这个view的background就是需要延伸的Drawable
+     */
+    public static void setTranslucentForToolbarDrawable(Activity activity, int statusBarAlpha, View drawableview) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return;
+        }
+        setTransparentForWindow(activity);
+        addTranslucentView(activity, statusBarAlpha);
+        if (drawableview == null || drawableview.getParent() == null) {
+            return;
+        }
+        ViewGroup parentView = (ViewGroup) drawableview.getParent();
+        //防止某些意外多次调用此方法导致高度一直增加状态栏高度
+        if (parentView.getTag() instanceof String && "newLayout".equals(parentView.getTag())){
+            return;
+        }
+        FrameLayout frameLayout = new FrameLayout(activity);
+        Drawable backgroundDrawable = drawableview.getBackground();
+        ViewGroup.MarginLayoutParams layoutParams_drawableview = (ViewGroup.MarginLayoutParams) drawableview.getLayoutParams();
+        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(layoutParams_drawableview.width,
+                layoutParams_drawableview.height);
+        layoutParams.height+=getStatusBarHeight(activity);
+        frameLayout.setLayoutParams(layoutParams);
+        frameLayout.setPadding(drawableview.getPaddingLeft(), drawableview.getPaddingTop() + getStatusBarHeight(activity),
+                drawableview.getPaddingRight(), drawableview.getPaddingBottom());
+        frameLayout.setBackground(backgroundDrawable);
+        drawableview.setBackground(null);
+        //防止某些意外多次调用此方法导致高度一直增加状态栏高度
+        frameLayout.setTag("newLayout");
+        int index = parentView.indexOfChild(drawableview);
+        parentView.removeView(drawableview);
+        frameLayout.addView(drawableview);
+        parentView.addView(frameLayout, index);
+    }
 
     /**
      * 设置状态栏颜色
