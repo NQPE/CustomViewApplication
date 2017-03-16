@@ -29,4 +29,11 @@
         <attr name="sv_text_size" format="dimension" />
         <attr name="sv_duration" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
 </resources>
