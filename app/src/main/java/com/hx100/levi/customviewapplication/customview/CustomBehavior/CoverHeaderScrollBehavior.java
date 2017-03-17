@@ -5,13 +5,15 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.hx100.levi.customviewapplication.R;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
 
 /**
  *
- *   自定义Behavior ：实现RecyclerView(或者其他可滑动View，如：NestedScrollView) 滑动覆盖header 的效果
- * Created by zhouwei on 16/12/19.
  */
 
 public class CoverHeaderScrollBehavior extends CoordinatorLayout.Behavior<View> {
@@ -21,21 +23,44 @@ public class CoverHeaderScrollBehavior extends CoordinatorLayout.Behavior<View> 
         super(context,attributeSet);
     }
 
-
+    LinearLayout ll_header;
+    RelativeLayout rl_title;
+    FrameLayout fl_top_bg;
     boolean is_first=true;
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
-        LogUtil.i(TAG,"onLayoutChild.....");
         if (!is_first)return false;
+        LogUtil.i("onLayoutChild.....  not first");
+        ll_header= (LinearLayout) parent.findViewById(R.id.ll_header);
+        rl_title= (RelativeLayout) parent.findViewById(R.id.rl_title);
+        fl_top_bg= (FrameLayout) parent.findViewById(R.id.fl_top_bg);
         is_first=false;
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        if(params!=null && params.height == CoordinatorLayout.LayoutParams.MATCH_PARENT){
-            child.layout(0,0,parent.getWidth(),parent.getHeight());
-            child.setTranslationY(getHeaderHeight());
+        ll_header.setTranslationY(150);
+        child.setTranslationY(ll_header.getHeight()+ll_header.getTranslationY());
+        LogUtil.i("onLayoutChild.....  ll_header.getHeight()=="+ll_header.getHeight());
+        LogUtil.i("onLayoutChild..... ll_header.getTranslationY()=="+ll_header.getTranslationY());
+        return true;
+//        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
+//        if(params!=null && params.height == CoordinatorLayout.LayoutParams.MATCH_PARENT){
+//            child.layout(0,0,parent.getWidth(),parent.getHeight());
+//            child.setTranslationY(getHeaderHeight());
+//            return true;
+//        }
+
+//        return super.onLayoutChild(parent, child, layoutDirection);
+    }
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+        if (dependency.getId()==R.id.ll_header){
             return true;
         }
+        return super.layoutDependsOn(parent, child, dependency);
+    }
 
-        return super.onLayoutChild(parent, child, layoutDirection);
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+        return super.onDependentViewChanged(parent, child, dependency);
     }
 
     @Override
@@ -46,41 +71,12 @@ public class CoverHeaderScrollBehavior extends CoordinatorLayout.Behavior<View> 
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dx, int dy, int[] consumed) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
-        // 在这个方法里面只处理向上滑动
-        if(dy < 0){
-            return;
-        }
-
-        float transY =  child.getTranslationY() - dy;
-        LogUtil.i(TAG,"transY:"+transY+"++++child.getTranslationY():"+child.getTranslationY()+"---->dy:"+dy);
-        if(transY > 0){
-            child.setTranslationY(transY);
-            consumed[1]= dy;
-        }
     }
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        // 在这个方法里只处理向下滑动
-        if(dyUnconsumed >0){
-            return;
-        }
-
-        float transY = child.getTranslationY() - dyUnconsumed;
-        LogUtil.i(TAG,"------>transY:"+transY+"****** child.getTranslationY():"+child.getTranslationY()+"--->dyUnconsumed"+dxUnconsumed);
-        if(transY > 0 && transY < getHeaderHeight()){
-            child.setTranslationY(transY);
-        }
     }
 
-    /**
-     * 获取Header 高度
-     * @return
-     */
-    public int getHeaderHeight(){
-        return 600;
-//        return MaterialDesignSimpleApplication.getAppContext().getResources().getDimensionPixelOffset(R.dimen.header_height);
-    }
 
 }

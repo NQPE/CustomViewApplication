@@ -9,4 +9,9 @@
     <string name="other_channel">其他频道</string>
     <string name="edit">编辑</string>
     <string name="finish">完成</string>
+
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+
+    <string name="header_scrolling_behavior">com.hx100.levi.customviewapplication.customview.CustomBehavior.HeaderScrollingBehavior</string>
+    <string name="header_float_behavior">com.hx100.levi.customviewapplication.customview.CustomBehavior.HeaderFloatBehavior</string>
 </resources>

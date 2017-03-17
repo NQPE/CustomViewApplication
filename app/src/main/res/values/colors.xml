@@ -8,4 +8,6 @@
   <color name="red_500">#ef4836</color>
   <color name="translucent_background">#dd000000</color>
   <color name="translucent">#00000000</color>
+  <color name="colorInitFloatBackground">#b0ffffff</color>
+  <color name="colorCollapsedFloatBackground">#e4e4e4</color>
 </resources>

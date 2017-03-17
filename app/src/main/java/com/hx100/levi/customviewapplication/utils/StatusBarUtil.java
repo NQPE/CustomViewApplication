@@ -37,22 +37,24 @@ public class StatusBarUtil {
      * @param statusBarAlpha 状态栏透明度
      * @param drawableview   需要延伸至状态栏的drawableview 这个view的background就是需要延伸的Drawable
      */
-    public static void setTranslucentForToolbarDrawable(Activity activity, int statusBarAlpha, View drawableview) {
+    public static boolean setTranslucentForToolbarDrawable(Activity activity, int statusBarAlpha, View drawableview) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return;
+            return false;
         }
         setTransparentForWindow(activity);
         addTranslucentView(activity, statusBarAlpha);
         if (drawableview == null || drawableview.getParent() == null) {
-            return;
+            return false;
         }
+        Drawable backgroundDrawable = drawableview.getBackground();
         ViewGroup parentView = (ViewGroup) drawableview.getParent();
         //防止某些意外多次调用此方法导致高度一直增加状态栏高度
         if (parentView.getTag() instanceof String && "newLayout".equals(parentView.getTag())){
-            return;
+            parentView.setBackground(backgroundDrawable);
+            drawableview.setBackground(null);
+            return false;
         }
         FrameLayout frameLayout = new FrameLayout(activity);
-        Drawable backgroundDrawable = drawableview.getBackground();
         ViewGroup.MarginLayoutParams layoutParams_drawableview = (ViewGroup.MarginLayoutParams) drawableview.getLayoutParams();
         ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(layoutParams_drawableview.width,
                 layoutParams_drawableview.height);
@@ -68,6 +70,7 @@ public class StatusBarUtil {
         parentView.removeView(drawableview);
         frameLayout.addView(drawableview);
         parentView.addView(frameLayout, index);
+        return true;
     }
 
     /**
