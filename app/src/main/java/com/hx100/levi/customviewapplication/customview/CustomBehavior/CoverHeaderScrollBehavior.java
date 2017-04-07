@@ -60,7 +60,10 @@ public class CoverHeaderScrollBehavior extends CoordinatorLayout.Behavior<View> 
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
-        return super.onDependentViewChanged(parent, child, dependency);
+        LogUtil.i("onDependentViewChanged....");
+        child.setTranslationY(ll_header.getHeight()+ll_header.getTranslationY());
+        return true;
+//        return super.onDependentViewChanged(parent, child, dependency);
     }
 
     @Override
@@ -71,12 +74,53 @@ public class CoverHeaderScrollBehavior extends CoordinatorLayout.Behavior<View> 
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dx, int dy, int[] consumed) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
+        LogUtil.i("onNestedPreScroll....dy=="+dy);
+        LogUtil.i("onNestedPreScroll....ll_header.getTranslationY()=="+ll_header.getTranslationY());
+        if (dy<0){//下拉
+            return;
+        }
+        float newTranslateY = ll_header.getTranslationY() - dy;
+        float minHeaderTranslate = -450;
+        LogUtil.i("onNestedPreScroll-----------newTranslateY=="+newTranslateY);
+
+        if (newTranslateY > minHeaderTranslate) {
+            ll_header.setTranslationY(newTranslateY);
+            consumed[1] = dy;
+        }
+//        if (dy>=0){//上拉
+//            if (ll_header.getTranslationY()>=-450){
+//                ll_header.setTranslationY(ll_header.getTranslationY() - dy);
+//                consumed[1]=dy;
+//            }
+//        }
     }
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+        LogUtil.i("onNestedScroll....dyConsumed=="+dyConsumed);
+        LogUtil.i("onNestedScroll....dyUnconsumed=="+dyUnconsumed);
+        if (dyUnconsumed>0){//上拉
+            return;
+        }
+            float newTranslateY = ll_header.getTranslationY() - dyUnconsumed;
+            float maxHeaderTranslate = 150;
+            LogUtil.i("onNestedScroll-----------newTranslateY=="+newTranslateY);
+
+            if (newTranslateY < maxHeaderTranslate) {
+                ll_header.setTranslationY(newTranslateY);
+            }
     }
 
+    @Override
+    public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, View child, View target, float velocityX, float velocityY) {
+        LogUtil.i("onNestedPreFling....velocityY=="+velocityY);
+        return super.onNestedPreFling(coordinatorLayout, child, target, velocityX, velocityY);
+    }
 
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target) {
+        super.onStopNestedScroll(coordinatorLayout, child, target);
+        LogUtil.i("onStopNestedScroll....");
+    }
 }

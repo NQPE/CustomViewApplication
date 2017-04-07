@@ -24,6 +24,7 @@
         <activity android:name=".activity.CutomView6Activity"></activity>
         <activity android:name=".activity.CutomView7Activity"></activity>
         <activity android:name=".activity.CutomView8Activity"></activity>
+        <activity android:name=".activity.CutomView9Activity"></activity>
         <activity android:name=".activity.ScrollingActivity"></activity>
         <activity android:name=".itemtouchhelperdemo.demochannel.ChannelActivity"></activity>
         <activity android:name=".itemtouchhelperdemo.demodrag.DragActivity"></activity>

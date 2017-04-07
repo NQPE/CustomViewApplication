@@ -47,8 +47,11 @@ public class HeaderScrollingBehavior extends CoordinatorLayout.Behavior<Recycler
         return false;
     }
 
+    boolean first=true;
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, RecyclerView child, int layoutDirection) {
+        if (!first)return false;
+        first=false;
         LogUtil.i("HeaderScrollingBehavior.onLayoutChild");
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
         if (lp.height == CoordinatorLayout.LayoutParams.MATCH_PARENT) {
@@ -135,7 +138,7 @@ public class HeaderScrollingBehavior extends CoordinatorLayout.Behavior<Recycler
     @Override
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, RecyclerView child, View target) {
         if (!isScrolling) {
-            onUserStopDragging(800);
+//            onUserStopDragging(800);
         }
     }
 
