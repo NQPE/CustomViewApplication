@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_item"
-    android:layout_width="wrap_content"
-    android:layout_height="50dp"
+    android:layout_width="70dp"
+    android:layout_height="40dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:layout_marginTop="20dp"
-    android:background="#f22ccfab">
+    android:background="@drawable/bg_corners20"
+    android:layout_marginTop="20dp">
 
     <TextView
         android:id="@+id/tv_item"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="test" />
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="test"
+        android:textColor="#333333"/>
+    <ImageView
+        android:id="@+id/iv_del"
+        android:layout_alignParentRight="true"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/icon_delete"/>
 </RelativeLayout>

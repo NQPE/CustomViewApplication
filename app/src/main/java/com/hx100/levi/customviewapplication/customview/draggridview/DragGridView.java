@@ -17,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -24,7 +25,6 @@ import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,31 +37,28 @@ public class DragGridView extends ViewGroup {
     public static final String TAG = "TAG_DragGridView";
 
     /**
-     * A view is not currently being dragged or animating as a result of a fling/snap.
+     * item处于可滑动状态 但是未滑动
      */
-    public static final int STATE_IDLE = 0;
-
+    public static final int STATE_DRAG_ENABLE = 1000;
     /**
-     * A view is currently being dragged. The position is currently changing as a result
-     * of user input or simulated user input.
+     * item不可滑动
      */
-    public static final int STATE_DRAGGING = 1;
-
+    public static final int STATE_DRAG_DISABLE =1001;
     /**
-     * A view is currently settling into place as a result of a fling or
-     * predefined non-interactive motion.
+     * item处于正在滑动状态
      */
-    public static final int STATE_SETTLING = 2;
+    public static final int STATE_DRAG_ING = 1002;
 
-    @IntDef({STATE_IDLE, STATE_DRAGGING, STATE_SETTLING})
+
+    @IntDef({STATE_DRAG_ENABLE, STATE_DRAG_DISABLE, STATE_DRAG_ING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemViewState {
     }
 
     //行(Row)
     int mRow = 1;
-    //列(Col)
-    int mCol = 0;
+    //列(Col) 默认4列
+    int mCol = 4;
     //view宽度
     int mWidth;
     //view高度
@@ -71,11 +68,13 @@ public class DragGridView extends ViewGroup {
     //一个item的高度
     int mItemHeight;
 
+    //记录down接触点的坐标
+    float mDownX,mDownY;
     //拖动状态
-    int mDragState = STATE_IDLE;
+    int mDragState = STATE_DRAG_ENABLE;
 
-    //控件是否可拖动
-    boolean mDragEnable = true;
+    //整个viewgroup控件是否可拖动
+    boolean mDragEnable = false;
 
     DragGridItemAdapter mDragGridIteAdapter;
 
@@ -86,7 +85,25 @@ public class DragGridView extends ViewGroup {
     //K 为itemview V 为itemview对应的信息
     HashMap<View, InfoAttachItemView> mMapInfoItemView;
     //K 为position V 为对应的坐标信息
-    HashMap<Integer, XYAttachPosition> mMapXYPosition = new HashMap<>();
+    HashMap<Integer, XYAttachPosition> mMapXYPosition ;
+    //最小滑动距离
+    int mTouchSlop;
+    //是否可拖动控件切换的监听
+    OnDragEnableListener mOnDragEnableListener;
+    /**
+     * item挤压移动 动画持续时间
+     * 默认200
+     */
+    int mMoveAnimDuration=200;
+
+    //处理长按改变拖拽状态时无缝拖拽view的问题
+    boolean mLongClickDragEnable;
+
+    //拖动item与其他item重叠范围判断
+    float mOverlapScale=1/8;
+
+    //数据管理manager
+    DragViewDataManager mDataManager=new DragViewDataManager();
 
     public DragGridView(Context context) {
         this(context, null);
@@ -105,6 +122,7 @@ public class DragGridView extends ViewGroup {
         setChildrenDrawingOrderEnabled(true);
 //        setLayerType(View.LAYER_TYPE_HARDWARE, null);
         setClipChildren(false);
+        mTouchSlop= ViewConfiguration.get(getContext()).getScaledTouchSlop();
     }
 
     @Override
@@ -138,11 +156,6 @@ public class DragGridView extends ViewGroup {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         Log.i(TAG, "onSizeChanged");
-        if (mMapInfoItemView != null) return;
-        for (int i=0;i<getChildCount();i++){
-            //初始化MapInfo
-            initMapInfoItemView(getChildAt(i), i);
-        }
     }
 
     @Override
@@ -165,7 +178,7 @@ public class DragGridView extends ViewGroup {
         Log.i(TAG, "childCount==" + childCount);
         //总共有多少行
         mRow = (childCount / mCol) + (childCount % mCol != 0 ? 1 : 0);
-        Log.i(TAG, "mRow==" + mRow);
+//        Log.i(TAG, "mRow==" + mRow);
         for (int i = 0; i < childCount; i++) {
             // 必须测量每一个child的高
             View child = getChildAt(i);
@@ -193,6 +206,16 @@ public class DragGridView extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         Log.i(TAG, "onLayout");
         int childCount = getChildCount();
+        if (mMapXYPosition!=null){
+            layoutChildViews(childCount);
+            return;
+        }
+        calculateMapXY(childCount);
+        layoutChildViews(childCount);
+
+    }
+
+    private void calculateMapXY(int childCount) {
         //每个item的平均宽度
         int childAverageWidth = (mWidth - getPaddingLeft() - getPaddingRight()) / mCol;
         mItemWidth = Math.min(childAverageWidth, mItemWidth);
@@ -213,7 +236,7 @@ public class DragGridView extends ViewGroup {
             int tc = (top + lp.topMargin);
             int bc = tc + child.getMeasuredHeight();
 //            Log.i(TAG, "onLayout lc,rc,tc,bc=="+lc+"  "+rc+"  "+tc+"  "+bc);
-            child.layout(lc, tc, rc, bc);
+//            child.layout(lc, tc, rc, bc);
 
             //初始化mapXY
             initMapXYPosition(i, lc, tc);
@@ -228,19 +251,56 @@ public class DragGridView extends ViewGroup {
         }
     }
 
+    private void layoutChildViews(int childCount) {
+        for (int i = 0; i < childCount; i++) {
+            View child = getChildAt(i);
+            int lc=mMapXYPosition.get(mMapInfoItemView.get(child).itemPosition).X;
+            int tc=mMapXYPosition.get(mMapInfoItemView.get(child).itemPosition).Y;
+            int rc=lc+mItemWidth;
+            int bc=tc+mItemHeight;
+//                Log.i(TAG,"i=="+i+"  lc=="+lc+"  tc=="+tc);
+            child.layout(lc, tc, rc, bc);
+        }
+    }
+
+
+    @Override
+    public void addView(View child, int index, LayoutParams params) {
+        Log.i(TAG,"addView(View child, int index, LayoutParams params)");
+        super.addView(child, index, params);
+    }
+
+    @Override
+    public void removeViewAt(int index) {
+        Log.i(TAG,"removeViewAt(int index)");
+        super.removeViewAt(index);
+    }
+
+    @Override
+    public void removeView(View view) {
+        Log.i(TAG,"removeView(View view)");
+        super.removeView(view);
+    }
+
+    @Override
+    public void removeAllViews() {
+        Log.i(TAG,"removeAllViews()");
+        super.removeAllViews();
+    }
     /**
      * 初始化MapInfo 存储itemview的position 信息
      *
      * @param child
      * @param i
      */
-    private void initMapInfoItemView(View child, int i) {
+    private void initMapInfoItemView(View child, int i,int state,Object itemData) {
         if (mMapInfoItemView==null){
             mMapInfoItemView = new HashMap<>();
         }
         InfoAttachItemView itemInfo = new InfoAttachItemView();
         itemInfo.itemPosition = i;
-        itemInfo.itemState = STATE_IDLE;
+        itemInfo.itemState =state;
+        itemInfo.itemData=itemData;
         mMapInfoItemView.put(child, itemInfo);
     }
 
@@ -252,6 +312,9 @@ public class DragGridView extends ViewGroup {
      * @param tc
      */
     private void initMapXYPosition(int i, int lc, int tc) {
+        if (mMapXYPosition==null){
+            mMapXYPosition=new HashMap<>();
+        }
         XYAttachPosition xyAttachPosition = createXYAttachPosition(lc, tc);
         mMapXYPosition.put(i, xyAttachPosition);
     }
@@ -263,7 +326,30 @@ public class DragGridView extends ViewGroup {
         return xyAttachPosition;
     }
 
-
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+//        switch (ev.getAction()){
+//            case MotionEvent.ACTION_DOWN:
+//                Log.i(TAG," dispatchTouchEvent Down");
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                Log.i(TAG," dispatchTouchEvent Move");
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                Log.i(TAG," dispatchTouchEvent Up");
+//                break;
+//        }
+        if (mLongClickDragEnable){
+//            Log.i(TAG,"mLongClickDragEnable");
+            mLongClickDragEnable=false;
+            // 重新dispatch一次down事件，使得拖拽itemview可以无缝拖拽
+            int oldAction = ev.getAction();
+            ev.setAction(MotionEvent.ACTION_DOWN);
+            dispatchTouchEvent(ev);
+            ev.setAction(oldAction);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return shouldInterceptTouchEvent(ev);
@@ -298,6 +384,7 @@ public class DragGridView extends ViewGroup {
      * @return
      */
     private boolean shouldInterceptTouchEvent(MotionEvent ev) {
+        if (!mDragEnable)return false;
         //获取action
         final int action = MotionEventCompat.getActionMasked(ev);
         //获取action对应的index
@@ -307,16 +394,51 @@ public class DragGridView extends ViewGroup {
                 final float x = ev.getX();
                 final float y = ev.getY();
                 mDragGridItemView = findTopChildUnder((int) x, (int) y);
+                if (checkDisableDrag(mDragGridItemView)){
+                    mDragGridItemView=null;
+                }
                 if (mDragGridItemView != null) {
+                    if (getParent()!=null){
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
                     //重写刷新draw的缓存 好重新排序drwaing
                     invalidate();
-                    return true;
                 }
+                mDownX=x;
+                mDownY=y;
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (checkTouchSlop(ev.getX(),ev.getY())){
+                    return true;
+                }
+
                 break;
         }
 
+        return false;
+    }
+
+    /**
+     * 验证view是否是disable状态
+     * @param itemview
+     * @return
+     */
+    private boolean checkDisableDrag(View itemview) {
+        //防止null意外报错
+        if (mMapInfoItemView.get(itemview)==null)return true;
+        return mMapInfoItemView.get(itemview).itemState==STATE_DRAG_DISABLE;
+    }
+
+    /**
+     * 检查是否是超出最大距离
+     * @param x
+     * @param y
+     * @return
+     */
+    private boolean checkTouchSlop(float x, float y) {
+        if (Math.abs(y-mDownY)>mTouchSlop||Math.abs(x-mDownX)>mTouchSlop){
+            return true;
+        }
         return false;
     }
 
@@ -332,21 +454,36 @@ public class DragGridView extends ViewGroup {
         final int actionIndex = MotionEventCompat.getActionIndex(ev);
         switch (action) {
             case MotionEvent.ACTION_MOVE:
-                final float x = ev.getX();
-                final float y = ev.getY();
+                //这里-mItemWidth/2 主要是为了滑动的时候不是以左上角为起点
+                //否则拖动的item的移动中心在左上角而不是中心点
+                final float x = ev.getX()-mItemWidth/2;
+                final float y = ev.getY()-mItemHeight/2;
+
                 if (mDragGridItemView != null) {
                     //拖拽至指定位置
                     dragTo(mDragGridItemView.getLeft(), mDragGridItemView.getTop(), (int) x, (int) y);
+                    //处理挤压动画
+                    handleMoveAnimation();
                 }
-                //处理挤压动画
-                handleMoveAnimation();
                 break;
             case MotionEvent.ACTION_UP:
-                mDragGridItemView = null;
+                handleUpAnimation();
                 break;
         }
 
         return true;
+    }
+
+    /**
+     * 抬起手指 拖动的view复原
+     */
+    private void handleUpAnimation() {
+        if (mDragGridItemView==null)return;
+        creatMoveAnimator(mDragGridItemView,
+                mMapXYPosition.get(mMapInfoItemView.get(mDragGridItemView).itemPosition).X,
+                mMapXYPosition.get(mMapInfoItemView.get(mDragGridItemView).itemPosition).Y)
+        .start();
+        mDragGridItemView = null;
     }
 
     /**
@@ -368,12 +505,13 @@ public class DragGridView extends ViewGroup {
         if (mDragGridItemView == null) return;
         int overlapPosition = getOverlapPosition(mDragGridItemView);
         if (overlapPosition==-1)return;
-        if (overlapPosition==mMapInfoItemView.get(mDragGridItemView).itemPosition)return;
-        AnimatorSet animatorSet=createMoveAnimation(overlapPosition,mMapInfoItemView.get(mDragGridItemView).itemPosition);
-        handleMoveData(overlapPosition,mMapInfoItemView.get(mDragGridItemView).itemPosition);
+        int itemPosition=mMapInfoItemView.get(mDragGridItemView).itemPosition;
+        if (overlapPosition==itemPosition)return;
+        AnimatorSet animatorSet=createMoveAnimation(overlapPosition,itemPosition);
+        handleMoveData(overlapPosition,itemPosition);
         Message msg=new Message();
         msg.obj=animatorSet;
-        handlerMoveAnimation.sendMessageDelayed(msg,200);
+        handlerMoveAnimation.sendMessageDelayed(msg,mMoveAnimDuration);
     }
 
     /**
@@ -383,7 +521,7 @@ public class DragGridView extends ViewGroup {
      */
     private AnimatorSet createMoveAnimation(int overlapPosition, int itemPosition) {
         AnimatorSet animSet = new AnimatorSet();
-        animSet.setDuration(200);
+        animSet.setDuration(mMoveAnimDuration);
         ArrayList<Animator> valueAnimators = new ArrayList<>();
         if (overlapPosition>itemPosition){
             for (int i=overlapPosition;i>itemPosition;i--){
@@ -431,14 +569,36 @@ public class DragGridView extends ViewGroup {
         int position = -1;
         int dragitemcenterx = mDragGridItemView.getLeft() + mItemWidth / 2;
         int dragitemcentery = mDragGridItemView.getTop() + mItemHeight / 2;
+        int lastPostion=mMapXYPosition.size()-1;
+
         //遍历map中的键
         for (Integer key : mMapXYPosition.keySet()) {
-            if (dragitemcenterx >= mMapXYPosition.get(key).X + mItemWidth / 4 && dragitemcenterx < mMapXYPosition.get(key).X + mItemWidth * 3 / 4 &&
-                    dragitemcentery >= mMapXYPosition.get(key).Y + mItemHeight / 4 && dragitemcentery < mMapXYPosition.get(key).Y + mItemHeight * 3 / 4) {
+            if (dragitemcenterx >= mMapXYPosition.get(key).X + mItemWidth *mOverlapScale && dragitemcenterx < mMapXYPosition.get(key).X + mItemWidth * (1-mOverlapScale) &&
+                    dragitemcentery >= mMapXYPosition.get(key).Y + mItemHeight *mOverlapScale && dragitemcentery < mMapXYPosition.get(key).Y + mItemHeight * (1-mOverlapScale)) {
                 position = key;
                 break;
             }
         }
+
+        if (position==-1){
+            //超出下边界 也算是 覆盖在了最后一个item上
+            if (dragitemcentery>mMapXYPosition.get(lastPostion).Y+mItemHeight){
+                return lastPostion;
+            }else if (dragitemcenterx>mMapXYPosition.get(lastPostion).X+mItemWidth&&
+                    dragitemcentery>mMapXYPosition.get(lastPostion).Y){
+                //在最后一个item的右边 也算是覆盖
+                return lastPostion;
+            }
+        }
+
+        //判断itemview state是否可拖动
+        if (position!=-1){
+            if (checkDisableDrag(getItemViewByPosition(position))){
+                return -1;
+            }
+        }
+
+
         return position;
     }
 
@@ -507,6 +667,32 @@ public class DragGridView extends ViewGroup {
         return animator;
     }
 
+    /**
+     *
+     * @param itemview  需要移动的view
+     * @param afterX  需要移动去的X
+     * @param afterY  需要移动去的Y
+     * @return
+     */
+    private ValueAnimator creatMoveAnimator(final View itemview, final int afterX, int afterY) {
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(mMoveAnimDuration);
+        animator.setTarget(itemview);
+        final int l = itemview.getLeft();
+        final int offset_l =afterX- l;
+        final int t = itemview.getTop();
+        final int offset_t = afterY-t;
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int lc = (int) (l + offset_l * (float) animation.getAnimatedValue());
+                int tc = (int) (t + offset_t * (float) animation.getAnimatedValue());
+                itemview.layout(lc, tc, lc + mItemWidth, tc + mItemHeight);
+            }
+        });
+        return animator;
+    }
+
 
 
     /**
@@ -549,6 +735,39 @@ public class DragGridView extends ViewGroup {
     }
 
     /**
+     * 处理OnDragEnableListener
+     */
+    private void handleOnDragEnableListener() {
+        if (mOnDragEnableListener==null)return;
+        mOnDragEnableListener.onDragEnableListener(mDragEnable);
+    }
+
+    /**
+     * 处理OnBindItemView
+     */
+    private void handleOnBindItemView() {
+        if (mDragGridIteAdapter==null)return;
+//        Log.i(TAG,"handleOnBindItemView  mMapInfoItemView.size()=="+mMapInfoItemView.size());
+        for (int i=0;i<mMapInfoItemView.size();i++){
+            View item=getItemViewByPosition(i);
+            mDragGridIteAdapter.onBindView(mMapInfoItemView.get(item).itemState,item,mMapInfoItemView.get(item).itemData);
+        }
+    }
+
+    /**
+     * 处理因为长按而改变拖拽状态时 itemview无法无缝连接的成为拖动的itemview
+     * 必须还要抬手再次触摸滑动才可拖动的问题
+     *
+     * 重新dispatch一次down事件，使得拖拽itemview可以无缝拖拽
+     *
+     */
+    private void handleDispatchTouchEvent() {
+        if (mDragEnable){
+            mLongClickDragEnable=true;
+        }
+    }
+
+    /**
      * 依附于itemview上面的信息
      *
      * @param <T>
@@ -577,45 +796,199 @@ public class DragGridView extends ViewGroup {
 
 
     /**
+     * 数据管理类
+     */
+    public class DragViewDataManager {
+        /**
+         * 数据变化 引起的页面及数据重构
+         */
+        public void addItems(List data) {
+            removeAllViews();
+            for (int i = 0; i < data.size(); i++) {
+                int state=i<mDragGridIteAdapter.disableDragCount?STATE_DRAG_DISABLE:STATE_DRAG_ENABLE;
+                View itemview = mDragGridIteAdapter.onCreateItemView(mDragGridIteAdapter.getDragGridView());
+                mDragGridIteAdapter.onBindView(state,itemview, data.get(i));
+                //初始化MapInfo
+                initMapInfoItemView(itemview, i,state, data.get(i));
+                mDragGridIteAdapter.dragGridView.addView(itemview);
+            }
+        }
+
+        /**
+         * 删除某一个itemView
+         * @param item
+         */
+        public void removeItem(final View item){
+            int overlapPosition=mMapInfoItemView.size()-1;
+            int itemPosition=mMapInfoItemView.get(item).itemPosition;
+            AnimatorSet animatorSet=createMoveAnimation(overlapPosition,itemPosition);
+            handleMoveData(overlapPosition,itemPosition);
+            handleRemoveData(overlapPosition,item);
+            handleDragView(item);
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    item.setVisibility(INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    DragGridView.this.removeView(item);
+                }
+            });
+            Message msg=new Message();
+            msg.obj=animatorSet;
+            handlerMoveAnimation.sendMessageDelayed(msg,0);
+        }
+
+        /**
+         * 这里添加是只支持添加到最后一个
+         *
+         */
+        public void addItem(Object itemData){
+            View itemView=mDragGridIteAdapter.onCreateItemView(DragGridView.this);
+            mDragGridIteAdapter.onBindView(STATE_DRAG_ENABLE,itemView,itemData);
+            handleAddData(itemData,itemView);
+            DragGridView.this.addView(itemView);
+        }
+
+        /**
+         * 返回重新排序后的数据集
+         *
+         */
+        public List getData(){
+            if (mMapInfoItemView==null||mMapInfoItemView.size()==0)return null;
+            ArrayList list=new ArrayList();
+            for (int i=0;i<mMapInfoItemView.size();i++){
+                //遍历map中的键
+                for (View key : mMapInfoItemView.keySet()) {
+                    if (mMapInfoItemView.get(key).itemPosition==i) {
+                        list.add(mMapInfoItemView.get(key).itemData);
+                        break;
+                    }
+                }
+
+            }
+            return list;
+        }
+
+        /**
+         * 处理添加数据
+         */
+        private void handleAddData(Object itemData, View itemView) {
+            //mMapXYPosition重置为null 就会再次走一次layout里面的测量流程
+            mMapXYPosition.clear();
+            mMapXYPosition=null;
+            //处理mMapInfoItemView
+            InfoAttachItemView itemInfo=new InfoAttachItemView();
+            itemInfo.itemData=itemData;
+            itemInfo.itemState=STATE_DRAG_ENABLE;
+            itemInfo.itemPosition=mMapInfoItemView.size();
+            mMapInfoItemView.put(itemView,itemInfo);
+        }
+
+
+        private void handleDragView(View item) {
+            if (mDragGridItemView!=null){
+                mDragGridItemView=null;
+                return;
+            }
+            mDragGridItemView=item;
+            //重写刷新draw的缓存 好重新排序drwaing
+            invalidate();
+            //注意这里一定要给mDragGridItemView赋null值
+            // 不然会持有item的引用导致报数组越界的错误
+            mDragGridItemView=null;
+        }
+
+        private void handleRemoveData(int overlapPosition,View item) {
+            mMapInfoItemView.remove(item);
+            mMapXYPosition.remove(overlapPosition);
+        }
+    }
+    /**
      * DragGridItemAdapter 设置数据用的adapter
      *
      * @param <T>
      */
     public abstract static class DragGridItemAdapter<T> {
-        private DragGridView dragGridView;
+        protected DragGridView dragGridView;
+        protected int disableDragCount=0;
+
+        /**
+         * 设置数据集
+         * 必须在DragGridView.setDragGridItemAdapter 之后使用
+         * @param list
+         */
+        public void setData(List<T> list){
+            if (dragGridView==null)return;
+            dragGridView.mDataManager.addItems(list);
+        }
+
+        //关联dragGridView
+        private void attachDragGridView(DragGridView dragGridView){
+            this.dragGridView=dragGridView;
+        }
 
         public abstract View onCreateItemView(ViewGroup parent);
 
-        public abstract void onBindView(View view, int position);
+        public abstract void onBindView(@ItemViewState int state,View view, T itemData);
 
-        public int getAdapterType() {
-            return 0;
+        /**
+         * 设置data排序的前N个item固定不能拖动
+         *  注意 一定要在setdata之前
+         * @return
+         */
+        public void setDisableDragCount(int count) {
+            this.disableDragCount=count;
         }
 
-        public abstract int getItemCount();
-
-        private void attachDragGridView(DragGridView dragGridView) {
-            this.dragGridView = dragGridView;
+        /**
+         * 返回data排序的前N个item固定不能拖动
+         * @return
+         */
+        public int getDisableDragCount() {
+            return disableDragCount;
         }
 
         public DragGridView getDragGridView() {
             return dragGridView;
         }
 
-        public void notifyChanged() {
-            notifyAddItemViews();
+        /**
+         * 返回重新排序之后的data
+         * @return
+         */
+        public List<T> getData(){
+            return  dragGridView.mDataManager.getData();
         }
 
-        private void notifyAddItemViews() {
-            this.dragGridView.removeAllViews();
-            for (int i = 0; i < getItemCount(); i++) {
-                View itemview = onCreateItemView(dragGridView);
-                onBindView(itemview, i);
-                this.dragGridView.addView(itemview);
-            }
+//        public void notifyChanged() {
+//            dragGridView.mDataManager.addItems(getData());
+//        }
+
+        public void removeItem(View item){
+            dragGridView.mDataManager.removeItem(item);
         }
+
+        public void addItem(T itemData){
+            dragGridView.mDataManager.addItem(itemData);
+        }
+
     }
 
+    /**
+     * viewgroup控件在可拖动与不可拖动直接切换时触发的listener
+     */
+    public interface OnDragEnableListener{
+        /**
+         *
+         * @param dragEnable
+         */
+         void onDragEnableListener(boolean dragEnable);
+    }
 /**===================================提供给外部的方法start================================*/
 
     /**
@@ -636,7 +1009,38 @@ public class DragGridView extends ViewGroup {
     public void setDragGridItemAdapter(DragGridItemAdapter adapter) {
         this.mDragGridIteAdapter = adapter;
         this.mDragGridIteAdapter.attachDragGridView(this);
-        this.mDragGridIteAdapter.notifyAddItemViews();
+    }
+
+    /**
+     * 整个viewgroup控件是否可拖动子view
+     *
+     * @param enable
+     */
+    public void setDragEnable(boolean enable){
+        mDragEnable=enable;
+        handleOnDragEnableListener();
+        handleOnBindItemView();
+        handleDispatchTouchEvent();
+    }
+
+
+    /**
+     * 得到是否是可拖动状态
+     * @return
+     */
+    public boolean getDragEnable(){
+        return mDragEnable;
+    }
+
+    /**
+     * 设置是否可拖动子view的监听接口
+     */
+    public void setOnDragEnableListener(OnDragEnableListener listener){
+        this.mOnDragEnableListener=listener;
+    }
+
+    public DragViewDataManager getDataManager(){
+        return mDataManager;
     }
 /**==================================提供给外部的方法end========================================*/
 

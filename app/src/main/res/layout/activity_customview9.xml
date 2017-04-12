@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="#f2f2f2"
     android:orientation="vertical">
     <ScrollView
         android:layout_width="match_parent"
@@ -25,22 +25,51 @@
                     android:background="@color/colorAccent"/>
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl_gridview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:clipChildren="false">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@color/red_500"/>
+               <RelativeLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="50dp">
+                   <TextView
+                       android:id="@+id/tv_add"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:gravity="center"
+                       android:textColor="#3F51B5"
+                       android:layout_marginLeft="10dp"
+                       android:textSize="16sp"
+                       android:text="添加频道"/>
+                   <TextView
+                       android:id="@+id/tv_getdata"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:gravity="center"
+                       android:textColor="#3F51B5"
+                       android:layout_centerHorizontal="true"
+                       android:textSize="16sp"
+                       android:text="get size"/>
+                   <TextView
+                       android:id="@+id/tv_change"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:gravity="center"
+                       android:textColor="#3F51B5"
+                       android:paddingRight="20dp"
+                       android:paddingLeft="20dp"
+                       android:layout_alignParentRight="true"
+                       android:textSize="16sp"
+                       android:text="切换"/>
+               </RelativeLayout>
                 <com.hx100.levi.customviewapplication.customview.draggridview.DragGridView
                     android:id="@+id/draggridview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="50dp"/>
-            </RelativeLayout>
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </RelativeLayout>
     </ScrollView>
 </android.support.design.widget.CoordinatorLayout>
