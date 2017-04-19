@@ -70,8 +70,6 @@ public class DragGridView extends ViewGroup {
 
     //记录down接触点的坐标
     float mDownX,mDownY;
-    //拖动状态
-    int mDragState = STATE_DRAG_ENABLE;
 
     //整个viewgroup控件是否可拖动
     boolean mDragEnable = false;
@@ -80,8 +78,6 @@ public class DragGridView extends ViewGroup {
 
     //拖动的itemview
     View mDragGridItemView;
-    //与拖动的item重叠的itemview
-    View mOverlapGridItemView;
     //K 为itemview V 为itemview对应的信息
     HashMap<View, InfoAttachItemView> mMapInfoItemView;
     //K 为position V 为对应的坐标信息
@@ -122,6 +118,7 @@ public class DragGridView extends ViewGroup {
         setChildrenDrawingOrderEnabled(true);
 //        setLayerType(View.LAYER_TYPE_HARDWARE, null);
         setClipChildren(false);
+        setClipToPadding(false);
         mTouchSlop= ViewConfiguration.get(getContext()).getScaledTouchSlop();
     }
 
@@ -668,13 +665,13 @@ public class DragGridView extends ViewGroup {
     }
 
     /**
-     *
+     * 采用itemview.layout来移动
      * @param itemview  需要移动的view
      * @param afterX  需要移动去的X
      * @param afterY  需要移动去的Y
      * @return
      */
-    private ValueAnimator creatMoveAnimator(final View itemview, final int afterX, int afterY) {
+    private ValueAnimator creatMoveAnimator(final View itemview, final int afterX, final int afterY) {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
         animator.setDuration(mMoveAnimDuration);
         animator.setTarget(itemview);
@@ -688,11 +685,43 @@ public class DragGridView extends ViewGroup {
                 int lc = (int) (l + offset_l * (float) animation.getAnimatedValue());
                 int tc = (int) (t + offset_t * (float) animation.getAnimatedValue());
                 itemview.layout(lc, tc, lc + mItemWidth, tc + mItemHeight);
+
             }
         });
         return animator;
     }
 
+    /**
+     *采用itemview.setTranslationX/Y来移动
+     * @param itemview  需要移动的view
+     * @param afterX  需要移动去的X
+     * @param afterY  需要移动去的Y
+     * @return
+     */
+    private ValueAnimator creatMoveAnimation(final View itemview, final int afterX, int afterY) {
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(360);
+        animator.setTarget(itemview);
+        final int l = itemview.getLeft();
+        final int offset_l =afterX- l;
+        final int t = itemview.getTop();
+        final int offset_t = afterY-t;
+        Log.i(TAG,"offset_l=="+offset_l);
+        Log.i(TAG,"offset_t=="+offset_t);
+        Log.i(TAG,"l=="+l);
+        Log.i(TAG,"t=="+t);
+        Log.i(TAG,"afterX=="+afterX);
+        Log.i(TAG,"afterY=="+afterY);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float animatedFraction= (float) animation.getAnimatedValue();
+                itemview.setTranslationX(evaluateInt(animatedFraction, 0, offset_l));
+                itemview.setTranslationY(evaluateInt(animatedFraction, 0, offset_t));
+            }
+        });
+        return animator;
+    }
 
 
     /**
@@ -794,6 +823,45 @@ public class DragGridView extends ViewGroup {
         public int Y;
     }
 
+    /**
+     * 得到最后一个item的下一个item的XY坐标
+     * 这个XY坐标是相对于屏幕来的
+     * 主要用于添加item的移动动画的准备
+     * @param itemView
+     * @return
+     */
+    private XYAttachPosition creatPrepareAddLastItemXY(View itemView) {
+        XYAttachPosition xy=new XYAttachPosition();
+        //每个item的平均宽度
+        int childAverageWidth = (mWidth - getPaddingLeft() - getPaddingRight()) / mCol;
+        int left = getPaddingLeft();
+        int top = getPaddingTop();
+        int[] location=new int[2];
+        //得到child的MarginLayoutParams
+        MarginLayoutParams lp = (MarginLayoutParams) itemView.getLayoutParams();
+        int lastIndex=mMapXYPosition.size()-1;
+        if (mItemHeight==0){
+            mItemHeight=itemView.getMeasuredHeight();
+        }
+        if (lastIndex>0){
+            getItemViewByPosition(lastIndex).getLocationOnScreen(location);
+            if ((lastIndex+1)%mCol==0){
+                location[0]=location[0]-childAverageWidth*(mCol-1);
+            }else {
+                location[0]=location[0]+childAverageWidth;
+                location[1]=location[1]-(mItemHeight+ lp.bottomMargin + lp.topMargin);
+            }
+        }else {
+            this.getLocationOnScreen(location);
+            location[0]=location[0]+left;
+            location[1]=location[1]+top;
+        }
+
+        xy.X=location[0];
+        xy.Y=location[1];
+        return xy;
+    }
+
 
     /**
      * 数据管理类
@@ -847,11 +915,12 @@ public class DragGridView extends ViewGroup {
          * 这里添加是只支持添加到最后一个
          *
          */
-        public void addItem(Object itemData){
+        public View addItem(Object itemData){
             View itemView=mDragGridIteAdapter.onCreateItemView(DragGridView.this);
             mDragGridIteAdapter.onBindView(STATE_DRAG_ENABLE,itemView,itemData);
             handleAddData(itemData,itemView);
             DragGridView.this.addView(itemView);
+            return itemView;
         }
 
         /**
@@ -973,8 +1042,50 @@ public class DragGridView extends ViewGroup {
             dragGridView.mDataManager.removeItem(item);
         }
 
-        public void addItem(T itemData){
-            dragGridView.mDataManager.addItem(itemData);
+        public View addItem(T itemData){
+            return dragGridView.mDataManager.addItem(itemData);
+        }
+
+        /**
+         * 移动某个view去某处
+         * @param itemview
+         * @param afterX
+         * @param afterY
+         * @param animAdapter
+         */
+        public void moveItemToPositon(final View itemview, final int afterX, int afterY,AnimatorListenerAdapter animAdapter){
+            ValueAnimator animator=dragGridView.creatMoveAnimation(itemview,afterX,afterY);
+            if (animAdapter!=null){
+                animator.addListener(animAdapter);
+            }
+            animator.start();
+        }
+
+        /**
+         * 删除某个view并添加到另外一个targetDragGridView里面
+         * 必须保证itemData 即T 一致
+         * @param itemview
+         */
+        public void removeMoveItemToTarget(final DragGridView target, final View itemview){
+            XYAttachPosition xy=target.getPrepareAddLastItemXY(itemview);
+            final Object t=dragGridView.mMapInfoItemView.get(itemview).itemData;
+            final View addItemView=target.getAdapter().addItem(t);
+            AnimatorListenerAdapter animAdapter=new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    addItemView.setVisibility(INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+//                    itemview.setVisibility(GONE);
+                    addItemView.setVisibility(VISIBLE);
+                    dragGridView.getAdapter().removeItem(itemview);
+                }
+            };
+            moveItemToPositon(itemview,xy.X,xy.Y,animAdapter);
         }
 
     }
@@ -1042,6 +1153,27 @@ public class DragGridView extends ViewGroup {
     public DragViewDataManager getDataManager(){
         return mDataManager;
     }
+
+    /**
+     * 返回adapter
+     * @return
+     */
+    public DragGridItemAdapter getAdapter(){
+        return mDragGridIteAdapter;
+    }
+
+    /**
+     * 得到最后一个item的下一个item的XY坐标
+     * 主要用于添加item的移动动画的准备
+     * @param itemView
+     * @return
+     */
+    public XYAttachPosition getPrepareAddLastItemXY(View itemView){
+
+        return creatPrepareAddLastItemXY(itemView);
+    }
+
+
 /**==================================提供给外部的方法end========================================*/
 
 /**==================================工具函数start=====================================*/
@@ -1086,6 +1218,18 @@ public class DragGridView extends ViewGroup {
         return (int) (pxValue / scale + 0.5f);
     }
 
+    /**
+     * Integer 估值器
+     *
+     * @param fraction
+     * @param startValue
+     * @param endValue
+     * @return
+     */
+    public static Integer evaluateInt(float fraction, Integer startValue, Integer endValue) {
+        int startInt = startValue;
+        return (int) (startInt + fraction * (endValue - startInt));
+    }
 
 /**=====================================工具函数end==================================*/
 

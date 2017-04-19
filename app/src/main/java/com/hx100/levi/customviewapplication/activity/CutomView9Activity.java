@@ -29,11 +29,14 @@ import java.util.List;
  */
 public class CutomView9Activity extends Activity{
     DragGridView draggridview;
+    DragGridView other_draggridview;
     TextView tv_change;
     TextView tv_add;
     TextView tv_getdata;
     List<Item> data=new ArrayList<>();
+    List<Item> otherData=new ArrayList<>();
     MyAdapter adapter;
+    OtherAdapter otherAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +45,29 @@ public class CutomView9Activity extends Activity{
     }
 
     private void init() {
-        draggridview= (DragGridView) findViewById(R.id.draggridview);
-        draggridview.setCol(4);
-        adapter=new MyAdapter();
-        draggridview.setDragGridItemAdapter(adapter);
+        setDragTitle();
+        setDraggridview();
+        setOtherDraggridview();
+
+
+    }
+
+    private void setOtherDraggridview() {
+        other_draggridview= (DragGridView) findViewById(R.id.other_draggridview);
+        other_draggridview.setCol(4);
+        otherAdapter=new OtherAdapter();
+        other_draggridview.setDragEnable(false);
+        other_draggridview.setDragGridItemAdapter(otherAdapter);
+
+//        for (int i=0;i<10;i++){
+//            Item item=new Item();
+//            item.title="其他频道"+i;
+//            otherData.add(item);
+//        }
+//        otherAdapter.setData(otherData);
+    }
+
+    private void setDragTitle() {
         tv_change= (TextView) findViewById(R.id.tv_change);
         tv_change.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +95,13 @@ public class CutomView9Activity extends Activity{
                 }
             }
         });
+    }
 
+    private void setDraggridview() {
+        draggridview= (DragGridView) findViewById(R.id.draggridview);
+        draggridview.setCol(4);
+        adapter=new MyAdapter();
+        draggridview.setDragGridItemAdapter(adapter);
         for (int i=0;i<10;i++){
             Item item=new Item();
             item.title="频道"+i;
@@ -82,10 +110,9 @@ public class CutomView9Activity extends Activity{
 
         adapter.setDisableDragCount(2);
         adapter.setData(data);
-
     }
 
-    public static class MyAdapter extends DragGridView.DragGridItemAdapter<Item>{
+    public  class MyAdapter extends DragGridView.DragGridItemAdapter<Item>{
 
 
         @Override
@@ -103,7 +130,8 @@ public class CutomView9Activity extends Activity{
                 public void onClick(View v) {
 //                    Toast.makeText(v.getContext(),itemData.title,Toast.LENGTH_SHORT).show();
                     if (getDragGridView().getDragEnable()&&state==DragGridView.STATE_DRAG_ENABLE){
-                        removeItem(view);
+//                        removeItem(view);
+                        removeMoveItemToTarget(other_draggridview,view);
                     }
                 }
             });
@@ -117,6 +145,49 @@ public class CutomView9Activity extends Activity{
                     return true;
                 }
             });
+
+            if (state==DragGridView.STATE_DRAG_ENABLE){
+                view.findViewById(R.id.iv_del).setVisibility(dragGridView.getDragEnable()?View.VISIBLE:View.GONE);
+            }else {
+                view.findViewById(R.id.iv_del).setVisibility(View.GONE);
+                ((TextView)view.findViewById(R.id.tv_item)).setText("固定"+itemData.title);
+            }
+        }
+
+    }
+    public  class OtherAdapter extends DragGridView.DragGridItemAdapter<Item>{
+
+
+        @Override
+        public View onCreateItemView(ViewGroup parent) {
+            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_draggridview_test, parent, false);
+            return view;
+        }
+
+        @Override
+        public void onBindView(final int state, final View view, final Item itemData) {
+//            Log.i("tag","onBindView position=="+position);
+            ((TextView)view.findViewById(R.id.tv_item)).setText(itemData.title);
+            ((TextView)view.findViewById(R.id.tv_item)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeMoveItemToTarget(draggridview,view);
+//                    Toast.makeText(v.getContext(),itemData.title,Toast.LENGTH_SHORT).show();
+//                    if (getDragGridView().getDragEnable()&&state==DragGridView.STATE_DRAG_ENABLE){
+//                        removeItem(view);
+//                    }
+                }
+            });
+//            ((TextView)view.findViewById(R.id.tv_item)).setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    if (!getDragGridView().getDragEnable()){
+//                        getDragGridView().setDragEnable(true);
+//                    }
+////                    Toast.makeText(v.getContext(),"长按"+position,Toast.LENGTH_SHORT).show();
+//                    return true;
+//                }
+//            });
 
             if (state==DragGridView.STATE_DRAG_ENABLE){
                 view.findViewById(R.id.iv_del).setVisibility(dragGridView.getDragEnable()?View.VISIBLE:View.GONE);

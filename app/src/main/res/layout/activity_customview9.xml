@@ -5,70 +5,95 @@
     android:layout_height="match_parent"
     android:background="#f2f2f2"
     android:orientation="vertical">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/rl_other"
+            <LinearLayout
+                android:id="@+id/ll_other"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/rl_gridview">
-                <View
+                android:clipChildren="false"
+                android:layout_below="@+id/ll_gridview"
+                android:orientation="vertical">
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="@color/colorAccent"/>
-            </RelativeLayout>
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="点击添加更多频道"
+                        android:textColor="#cccccc"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
+                <com.hx100.levi.customviewapplication.customview.draggridview.DragGridView
+                    android:id="@+id/other_draggridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp" />
+            </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/rl_gridview"
+                android:id="@+id/ll_gridview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:clipChildren="false">
+                android:clipChildren="false"
+                android:orientation="vertical">
 
-               <RelativeLayout
-                   android:layout_width="match_parent"
-                   android:layout_height="50dp">
-                   <TextView
-                       android:id="@+id/tv_add"
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:gravity="center"
-                       android:textColor="#3F51B5"
-                       android:layout_marginLeft="10dp"
-                       android:textSize="16sp"
-                       android:text="添加频道"/>
-                   <TextView
-                       android:id="@+id/tv_getdata"
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:gravity="center"
-                       android:textColor="#3F51B5"
-                       android:layout_centerHorizontal="true"
-                       android:textSize="16sp"
-                       android:text="get size"/>
-                   <TextView
-                       android:id="@+id/tv_change"
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:gravity="center"
-                       android:textColor="#3F51B5"
-                       android:paddingRight="20dp"
-                       android:paddingLeft="20dp"
-                       android:layout_alignParentRight="true"
-                       android:textSize="16sp"
-                       android:text="切换"/>
-               </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:id="@+id/tv_add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="添加频道"
+                        android:textColor="#3F51B5"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_getdata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:text="get size"
+                        android:textColor="#3F51B5"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_change"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:text="切换"
+                        android:textColor="#3F51B5"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
                 <com.hx100.levi.customviewapplication.customview.draggridview.DragGridView
                     android:id="@+id/draggridview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp" />
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>
