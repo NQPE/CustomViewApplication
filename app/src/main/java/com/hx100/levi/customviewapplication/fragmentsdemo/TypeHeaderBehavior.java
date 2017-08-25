@@ -5,6 +5,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,10 +24,14 @@ public class TypeHeaderBehavior extends CoordinatorLayout.Behavior<View> {
     ServiceThreeFragment fragment;
     View dependencyView;
     Context context;
+    int offset;
+    int top;
+    boolean  shrinking;
     public TypeHeaderBehavior(ServiceThreeFragment fragment){
         this.fragment=fragment;
         this.context=fragment.getContext();
     }
+
 
     public TypeHeaderBehavior(Context context, AttributeSet attributeSet){
         super(context,attributeSet);
@@ -35,15 +40,12 @@ public class TypeHeaderBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, View child, int layoutDirection) {
         LogUtil.i("onLayoutChild.....  ");
-        int top=ScreenUtils.dip2px(context,50)+ ImmersionBar.getStatusBarHeight(fragment.getActivity());
-        int bottom=top+fragment.ll_header.getHeight();
-//        LogUtil.i("top=="+top);
-//        LogUtil.i("bottom=="+bottom);
-        fragment.ll_header.layout(0, top,
-                fragment.ll_header.getWidth(),
-                bottom);
-//        LogUtil.i("fl_content gettop" +fragment.fl_content.getTop());
-//        LogUtil.i("fl_content getheight" +fragment.fl_content.getHeight());
+        top=ScreenUtils.dip2px(context,50)+ ImmersionBar.getStatusBarHeight(fragment.getActivity());
+        offset=fragment.ll_header.getHeight()-top;
+        ViewGroup.MarginLayoutParams lp= (ViewGroup.MarginLayoutParams) fragment.fl_content.getLayoutParams();
+        lp.topMargin=top;
+        LogUtil.i("top=="+top);
+        LogUtil.i("offset=="+offset);
         return false;
     }
 
@@ -60,10 +62,8 @@ public class TypeHeaderBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
         LogUtil.i("onDependentViewChanged....");
-        ViewCompat.setY(child,dependency.getY()+dependency.getHeight());
-//        child.setTranslationY(dependencyView.getHeight()+dependencyView.getTranslationY());
+        ViewCompat.setTranslationY(child,dependency.getHeight()+dependency.getTranslationY()-top);
         return true;
-//        return super.onDependentViewChanged(parent, child, dependency);
     }
 
     @Override
@@ -76,6 +76,16 @@ public class TypeHeaderBehavior extends CoordinatorLayout.Behavior<View> {
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dx, int dy, int[] consumed) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
         LogUtil.i("onNestedPreScroll....dy=="+dy);
+        if (dy<0){//下拉
+            return;
+        }
+        float newTranslateY = fragment.ll_header.getTranslationY() - dy;
+//        LogUtil.i("newTranslateY"+newTranslateY);
+        if (Math.abs(newTranslateY)<offset){
+            consumed[1]=dy;
+            ViewCompat.setTranslationY(fragment.ll_header,newTranslateY);
+        }
+
     }
 
     @Override
@@ -83,6 +93,16 @@ public class TypeHeaderBehavior extends CoordinatorLayout.Behavior<View> {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         LogUtil.i("onNestedScroll....dyConsumed=="+dyConsumed);
         LogUtil.i("onNestedScroll....dyUnconsumed=="+dyUnconsumed);
+        if (dyUnconsumed>0){//上拉
+            return;
+        }
+        float newTranslateY = fragment.ll_header.getTranslationY() - dyUnconsumed;
+        LogUtil.i("onNestedScroll-----------newTranslateY=="+newTranslateY);
+
+        if (newTranslateY <= 0) {
+            fragment.ll_header.setTranslationY(newTranslateY);
+            return;
+        }
     }
 
     @Override

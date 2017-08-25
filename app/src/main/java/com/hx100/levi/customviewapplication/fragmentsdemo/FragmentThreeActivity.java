@@ -39,7 +39,7 @@ public class FragmentThreeActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void initImmersionBar() {
         super.initImmersionBar();
-        mImmersionBar.keyboardEnable(true).navigationBarColor(R.color.colorPrimary).navigationBarWithKitkatEnable(false).init();
+//        mImmersionBar.keyboardEnable(true).navigationBarColor(R.color.colorPrimary).navigationBarWithKitkatEnable(false).init();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class FragmentThreeActivity extends BaseActivity implements View.OnClickL
         switch (position) {
             case 0:
                 tabSelected(ll_home);
-                mImmersionBar.statusBarDarkFont(false).navigationBarColor(R.color.colorPrimary).init();
+                mImmersionBar.statusBarDarkFont(false).init();
                 break;
             case 1:
                 tabSelected(ll_category);
