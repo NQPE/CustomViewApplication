@@ -155,6 +155,28 @@
                 android:text="GridView频道排序"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_customview14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="edittext 测试"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_customview15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="fragment 测试"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

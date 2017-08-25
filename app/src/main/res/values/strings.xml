@@ -14,4 +14,5 @@
 
     <string name="header_scrolling_behavior">com.hx100.levi.customviewapplication.customview.CustomBehavior.HeaderScrollingBehavior</string>
     <string name="header_float_behavior">com.hx100.levi.customviewapplication.customview.CustomBehavior.HeaderFloatBehavior</string>
+    <string name="type_header_behavior">com.hx100.levi.customviewapplication.fragmentsdemo.TypeHeaderBehavior</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.hx100.levi.customviewapplication.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.io.Serializable;
 
@@ -33,4 +35,11 @@ public class SimpleUtils {
         return vo;
     }
 
+    /**
+     * 简单的无样式的toast
+     * @param info
+     */
+    public static void simpleToast(Context context,String info) {
+        Toast.makeText(context, info, Toast.LENGTH_SHORT).show();
+    }
 }

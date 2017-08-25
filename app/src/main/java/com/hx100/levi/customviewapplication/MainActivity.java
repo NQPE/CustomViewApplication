@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.hx100.levi.customviewapplication.activity.CutomView10Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView1Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView2Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView3Activity;
@@ -19,6 +20,7 @@ import com.hx100.levi.customviewapplication.activity.CutomView9Activity;
 import com.hx100.levi.customviewapplication.activity.ScrollingActivity;
 import com.hx100.levi.customviewapplication.dragphotodemo.DragPhotoActivity1;
 import com.hx100.levi.customviewapplication.dragphotoviewdemo.DragPhotoDemoActivity;
+import com.hx100.levi.customviewapplication.fragmentsdemo.FragmentThreeActivity;
 import com.hx100.levi.customviewapplication.itemtouchhelperdemo.ItemTouchHelperDemoActivity;
 import com.hx100.levi.customviewapplication.utils.SimpleUtils;
 
@@ -46,6 +48,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         findViewById(R.id.btn_customview11).setOnClickListener(this);
         findViewById(R.id.btn_customview12).setOnClickListener(this);
         findViewById(R.id.btn_customview13).setOnClickListener(this);
+        findViewById(R.id.btn_customview14).setOnClickListener(this);
+        findViewById(R.id.btn_customview15).setOnClickListener(this);
     }
 
     @Override
@@ -89,6 +93,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.btn_customview13:
                 SimpleUtils.skipActivity(this,CutomView9Activity.class);
+                break;
+            case R.id.btn_customview14:
+                SimpleUtils.skipActivity(this,CutomView10Activity.class);
+                break;
+            case R.id.btn_customview15:
+                SimpleUtils.skipActivity(this,FragmentThreeActivity.class);
                 break;
 
         }

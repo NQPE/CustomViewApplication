@@ -28,6 +28,13 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.0'
     //DragPhotoView控件需要引进的第三方库PhotoView
     compile 'com.github.chrisbanes:PhotoView:1.3.1'
+    compile 'com.gyf.barlibrary:barlibrary:2.2.8'
+    //注解
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    //RecyclerView框架
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
 }
 
 //buildscript {
