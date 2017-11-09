@@ -82,6 +82,7 @@ public class ServiceThreeFragment extends BaseThreeFragment implements View.OnCl
         Type2Fragment type2Fragment = new Type2Fragment();
         mFragments.add(type1Fragment);
         mFragments.add(type2Fragment);
+        
     }
 
     @Override
