@@ -35,7 +35,8 @@
         <service
             android:name=".controldemo.ControlService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:process="com.controldemo.ControlService"/>
         <activity
             android:name=".dragphotoviewdemo.DragPhotoActivity"
             android:theme="@style/translucent"></activity>
