@@ -31,6 +31,11 @@
         <activity android:name=".itemtouchhelperdemo.demochannel.ChannelActivity"></activity>
         <activity android:name=".itemtouchhelperdemo.demodrag.DragActivity"></activity>
         <activity android:name=".itemtouchhelperdemo.ItemTouchHelperDemoActivity"></activity>
+        <activity android:name=".controldemo.ControlActivity"></activity>
+        <service
+            android:name=".controldemo.ControlService"
+            android:enabled="true"
+            android:exported="true"/>
         <activity
             android:name=".dragphotoviewdemo.DragPhotoActivity"
             android:theme="@style/translucent"></activity>

@@ -18,6 +18,7 @@ import com.hx100.levi.customviewapplication.activity.CutomView7Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView8Activity;
 import com.hx100.levi.customviewapplication.activity.CutomView9Activity;
 import com.hx100.levi.customviewapplication.activity.ScrollingActivity;
+import com.hx100.levi.customviewapplication.controldemo.ControlActivity;
 import com.hx100.levi.customviewapplication.dragphotodemo.DragPhotoActivity1;
 import com.hx100.levi.customviewapplication.dragphotoviewdemo.DragPhotoDemoActivity;
 import com.hx100.levi.customviewapplication.fragmentsdemo.FragmentThreeActivity;
@@ -50,6 +51,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         findViewById(R.id.btn_customview13).setOnClickListener(this);
         findViewById(R.id.btn_customview14).setOnClickListener(this);
         findViewById(R.id.btn_customview15).setOnClickListener(this);
+        findViewById(R.id.btn_customview16).setOnClickListener(this);
     }
 
     @Override
@@ -99,6 +101,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.btn_customview15:
                 SimpleUtils.skipActivity(this,FragmentThreeActivity.class);
+                break;
+            case R.id.btn_customview16:
+                SimpleUtils.skipActivity(this,ControlActivity.class);
                 break;
 
         }
