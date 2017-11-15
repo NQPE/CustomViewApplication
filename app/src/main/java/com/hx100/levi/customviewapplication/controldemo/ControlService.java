@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -12,6 +13,10 @@ import android.support.v7.app.NotificationCompat;
 
 import com.hx100.levi.customviewapplication.MainActivity;
 import com.hx100.levi.customviewapplication.R;
+import com.hx100.levi.customviewapplication.controldemo.autotest.AdbDevice;
+import com.hx100.levi.customviewapplication.controldemo.autotest.element.Element;
+import com.hx100.levi.customviewapplication.controldemo.autotest.element.Position;
+import com.hx100.levi.customviewapplication.controldemo.autotest.utils.ShellUtils;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -60,20 +65,6 @@ public class ControlService extends Service{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         LogUtil.i("ControlService--onStartCommand");
-        /**
-         *创建Notification
-         */
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.drawable.icon_delete);
-        builder.setContentTitle("前台服务");
-        builder.setContentText("这是前台服务");
-        Intent intent1 = new Intent(this, ControlActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity
-                (this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
-        Notification notification = builder.build();
-//启动到前台
-        startForeground(1, notification);
 
         startControl();
         return START_STICKY;
@@ -85,18 +76,26 @@ public class ControlService extends Service{
                     @Override
                     public void call(Long aLong) {
                         LogUtil.i("long=="+aLong);
-                        inputEvents.a(0, SystemClock.uptimeMillis(), 565, 200);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 210);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 220);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 230);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 240);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 250);
-                        inputEvents.a(2, SystemClock.uptimeMillis(), 565, 260);
-                        inputEvents.a(1, SystemClock.uptimeMillis(), 565, 260);
+                        String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
+//        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
+                        ShellUtils.suShell("uiautomator dump "+path);
+                        sleep(2000);
+                        AdbDevice adb = new AdbDevice();
+//                        adb.tap(565 ,255);
+                        Position position = new Position();
+//                        Element element=position.findElementByText("测试按钮");
+//                        adb.tap(element);
                     }
                 });
     }
 
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

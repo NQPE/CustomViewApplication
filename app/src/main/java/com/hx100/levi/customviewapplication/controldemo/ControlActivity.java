@@ -3,14 +3,17 @@ package com.hx100.levi.customviewapplication.controldemo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hx100.levi.customviewapplication.R;
+import com.hx100.levi.customviewapplication.controldemo.autotest.utils.ShellUtils;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -35,6 +38,11 @@ public class ControlActivity extends Activity{
     }
 
     private void init() {
+        String path= Environment.getExternalStorageDirectory()+"/customuiautomator/";
+        File file=new File(path);
+        if (!file.exists()){
+            file.mkdirs();
+        }
         inputEvents=new InputEventsUtil();
         tv_start= (TextView) findViewById(R.id.tv_start);
         tv_test= (TextView) findViewById(R.id.tv_test);
@@ -64,7 +72,18 @@ public class ControlActivity extends Activity{
 //            String[] r5 = readLine.substring(11).split(" ");
 //            inputEvents.a(2, SystemClock.uptimeMillis(), Float.parseFloat(r5[0]), Float.parseFloat(r5[1]));
 //        }
-        startService(new Intent(this.getApplicationContext(), ControlService.class));
 
+//        String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
+//        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
+//        ShellUtils.suShell("uiautomator dump "+path);
+//        sleep(2000);
+        startService(new Intent(this.getApplicationContext(), ControlService.class));
+    }
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

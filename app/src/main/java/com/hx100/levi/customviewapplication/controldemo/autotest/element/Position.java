@@ -1,5 +1,7 @@
 package com.hx100.levi.customviewapplication.controldemo.autotest.element;
 
+import android.os.Environment;
+
 import com.hx100.levi.customviewapplication.controldemo.autotest.TestException;
 import com.hx100.levi.customviewapplication.controldemo.autotest.utils.ShellUtils;
 
@@ -27,19 +29,34 @@ public class Position {
 	// 获取设备当前界面的控件信息，并解析uidump.xml文件
 	private void uidump() {
 
-		ShellUtils.suShell("uiautomator dump /data/local/tmp/uidump.xml");
-		sleep(2000);
-		ShellUtils.suShell("chmod 777 /data/local/tmp/uidump.xml");
-		sleep(2000);
+		String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
+//		ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
+//		sleep(2000);
+//		ShellUtils.suShell("uiautomator dump "+path);
+//		sleep(2000);
+//		ShellUtils.suShell("chmod 777 "+path);
+//		sleep(2000);
+//		ShellUtils.suShell("uiautomator dump /data/local/tmp/uidump.xml");
+//		sleep(2000);
+//		ShellUtils.suShell("chmod 777 /data/local/tmp/uidump.xml");
+//		sleep(2000);
 
 		try {
 			xml = ShellUtils.StringTOInputStream(ShellUtils
 					.getShellOut(ShellUtils
-							.shell("cat /data/local/tmp/uidump.xml")));
+							.shell("cat "+path)));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		try {
+//			xml = ShellUtils.StringTOInputStream(ShellUtils
+//					.getShellOut(ShellUtils
+//							.shell("cat /data/local/tmp/uidump.xml")));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		dumps = new UiDumpService().getDumps(xml);
 	}
