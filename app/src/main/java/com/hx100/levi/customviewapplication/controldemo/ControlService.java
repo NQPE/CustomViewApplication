@@ -3,6 +3,7 @@ package com.hx100.levi.customviewapplication.controldemo;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -71,22 +72,50 @@ public class ControlService extends Service{
     }
 
     private void startControl() {
-        Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Long>() {
-                    @Override
-                    public void call(Long aLong) {
-                        LogUtil.i("long=="+aLong);
-                        String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
+//        Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
+//                .subscribe(new Action1<Long>() {
+//                    @Override
+//                    public void call(Long aLong) {
+//                        LogUtil.i("long=="+aLong);
+//                        String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
+////        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
+//                        ShellUtils.suShell("uiautomator dump "+path);
+//                        sleep(2000);
+//                        AdbDevice adb = new AdbDevice();
+////                        adb.tap(565 ,255);
+//                        Position position = new Position();
+////                        Element element=position.findElementByText("测试按钮");
+////                        adb.tap(element);
+//                    }
+//                });
+        Intent intent = new Intent();
+        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setComponent(cmp);
+        startActivity(intent);
+        sleep(2000);
+        try {
+            AdbDevice adb = new AdbDevice();
+            String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
 //        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
-                        ShellUtils.suShell("uiautomator dump "+path);
-                        sleep(2000);
-                        AdbDevice adb = new AdbDevice();
-//                        adb.tap(565 ,255);
-                        Position position = new Position();
-//                        Element element=position.findElementByText("测试按钮");
-//                        adb.tap(element);
-                    }
-                });
+//            ShellUtils.suShell("uiautomator dump "+path);
+//            sleep(4000);
+//            Position position = new Position();
+//            Element element=position.findElementByContentdesc("搜索");
+//            adb.tap(element);
+//            sleep(200);
+            adb.tap(300,150);
+            sleep(2000);
+            adb.shell("input text wey");
+            sleep(2000);
+//            ShellUtils.suShell("uiautomator dump "+path);
+        }catch (Exception e){
+            e.printStackTrace();
+            LogUtil.i(e.getMessage());
+        }
+
     }
 
     private void sleep(long millis) {
