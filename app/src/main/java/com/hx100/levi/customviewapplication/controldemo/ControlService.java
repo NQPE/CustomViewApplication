@@ -108,7 +108,8 @@ public class ControlService extends Service{
 //            sleep(200);
             adb.tap(300,150);
             sleep(2000);
-            adb.shell("input text wey");
+//            adb.shell("input text wey");
+            CommonUtils.execRootCmd("input text wey");
             sleep(2000);
 //            ShellUtils.suShell("uiautomator dump "+path);
         }catch (Exception e){
