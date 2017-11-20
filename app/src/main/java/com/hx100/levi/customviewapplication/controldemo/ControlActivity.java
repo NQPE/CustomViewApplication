@@ -58,7 +58,7 @@ public class ControlActivity extends Activity{
                 Toast.makeText(view.getContext(),"test",Toast.LENGTH_SHORT).show();
             }
         });
-        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
+//        ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
     }
 
     private void control() {

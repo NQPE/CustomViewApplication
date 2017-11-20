@@ -96,14 +96,13 @@ public class ControlService extends Service{
 ////                        adb.tap(element);
 //                    }
 //                });
-//        Intent intent = new Intent();
-//        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-//        intent.setAction(Intent.ACTION_MAIN);
-//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        intent.setComponent(cmp);
-//        startActivity(intent);
-        startActivityForPackage(getApplicationContext(),"com.tencent.mm");
+        Intent intent = new Intent();
+        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setComponent(cmp);
+        startActivity(intent);
         sleep(2000);
         try {
             AdbDevice adb = new AdbDevice();
@@ -133,9 +132,17 @@ public class ControlService extends Service{
 //                            FastInputIME.sendText("中文测试");
 //                        }
 //                    });
+//            com.hx100.levi.customviewapplication.controldemo.ShellUtils.execCommand("input tap 300 150",true);
             adb.tap(300,150);
-            sleep(1000);
-            FastInputIME.sendText("中文测试");
+////            sleep(1000);
+//            Observable.timer(2,TimeUnit.SECONDS)
+//                    .subscribe(new Action1<Long>() {
+//                        @Override
+//                        public void call(Long aLong) {
+//                            FastInputIME.sendText("中文测试");
+//                        }
+//                    });
+
 //            adb.sendText("wey");
 //            sleep(500);
 //            adb.longPress(300,150,500);
@@ -176,42 +183,6 @@ public class ControlService extends Service{
         }
     }
 
-    /**
-     * 通过package名启动应用
-     *
-     * @param context
-     * @param packageName
-     * @return
-     */
-    @SuppressLint("NewApi")
-    public static boolean startActivityForPackage(Context context, String packageName) {
-        PackageInfo pi = null;
-        try {
-            pi = context.getPackageManager().getPackageInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
-        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        resolveIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        //		resolveIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        resolveIntent.setPackage(pi.packageName);
-        List<ResolveInfo> apps = context.getPackageManager().queryIntentActivities(resolveIntent, 0);
-        ResolveInfo ri = apps.iterator().next();
-        if (ri != null) {
-            String packageName1 = ri.activityInfo.packageName;
-            String className = ri.activityInfo.name;
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            ComponentName cn = new ComponentName(packageName1, className);
-            intent.setComponent(cn);
-            context.startActivity(intent);
-            return true;
-        }
-        return false;
-    }
     @Override
     public void onDestroy() {
         super.onDestroy();
