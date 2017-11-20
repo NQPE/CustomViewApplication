@@ -8,6 +8,7 @@
 /.idea/*
 .idea/*
 *.iml
+*/*.iml
 /gradle
 gradlew
 gradlew.bat

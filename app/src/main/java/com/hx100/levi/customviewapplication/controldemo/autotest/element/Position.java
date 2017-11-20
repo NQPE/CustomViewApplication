@@ -32,8 +32,8 @@ public class Position {
 		String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
 //		ShellUtils.suShell("chmod 777 "+Environment.getExternalStorageDirectory()+"/customuiautomator");
 //		sleep(2000);
-//		ShellUtils.suShell("uiautomator dump "+path);
-//		sleep(2000);
+		ShellUtils.suShell("uiautomator dump "+path);
+		sleep(2000);
 //		ShellUtils.suShell("chmod 777 "+path);
 //		sleep(2000);
 //		ShellUtils.suShell("uiautomator dump /data/local/tmp/uidump.xml");

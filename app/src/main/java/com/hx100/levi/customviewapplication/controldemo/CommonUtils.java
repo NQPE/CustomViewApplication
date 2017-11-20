@@ -1,5 +1,8 @@
 package com.hx100.levi.customviewapplication.controldemo;
 
+import android.content.ClipboardManager;
+import android.content.Context;
+
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 
@@ -41,6 +44,31 @@ public class CommonUtils {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    /**
+     * 实现文本复制功能
+     * add by wangqianzhou
+     * @param content
+     */
+    public static void copy(Context context,String content)
+    {
+// 得到剪贴板管理器
+        ClipboardManager cmb = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+        cmb.setText(content.trim());
+    }
+
+    /**
+     * 实现粘贴功能
+     * add by wangqianzhou
+     * @param context
+     * @return
+     */
+    public static String paste(Context context)
+    {
+// 得到剪贴板管理器
+        ClipboardManager cmb = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+        return cmb.getText().toString().trim();
     }
 
 }
