@@ -1,16 +1,22 @@
 package com.hx100.levi.customviewapplication.controldemo;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.hx100.levi.customviewapplication.MainActivity;
 import com.hx100.levi.customviewapplication.R;
@@ -20,10 +26,12 @@ import com.hx100.levi.customviewapplication.controldemo.autotest.element.Positio
 import com.hx100.levi.customviewapplication.controldemo.autotest.utils.ShellUtils;
 import com.hx100.levi.customviewapplication.utils.LogUtil;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static android.app.PendingIntent.getActivity;
@@ -88,13 +96,14 @@ public class ControlService extends Service{
 ////                        adb.tap(element);
 //                    }
 //                });
-        Intent intent = new Intent();
-        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setComponent(cmp);
-        startActivity(intent);
+//        Intent intent = new Intent();
+//        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+//        intent.setAction(Intent.ACTION_MAIN);
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setComponent(cmp);
+//        startActivity(intent);
+        startActivityForPackage(getApplicationContext(),"com.tencent.mm");
         sleep(2000);
         try {
             AdbDevice adb = new AdbDevice();
@@ -107,14 +116,44 @@ public class ControlService extends Service{
 //            adb.tap(element);
 //            sleep(200);
 //            adb.sendText("wey");
-            CommonUtils.copy(this.getApplicationContext(),"中文测试");
-//            adb.tap(300,150);
-            sleep(500);
-            adb.sendText("wey");
-            sleep(500);
-            adb.longPress(300,150,500);
+//            CommonUtils.copy(this.getApplicationContext(),"中文测试");
+//            Observable.timer(2,TimeUnit.SECONDS)
+//                    .map(new Func1<Long, Object>() {
+//                        @Override
+//                        public Object call(Long aLong) {
+////                            CommonUtils.execRootCmd("input tap 300 150");
+//                            AdbDevice adb = new AdbDevice();
+//                            adb.tap(300,150);
+//                            return null;
+//                        }
+//                    }).timer(2,TimeUnit.SECONDS)
+//                    .subscribe(new Action1<Long>() {
+//                        @Override
+//                        public void call(Long aLong) {
+//                            FastInputIME.sendText("中文测试");
+//                        }
+//                    });
+            adb.tap(300,150);
             sleep(1000);
-            ShellUtils.suShell("uiautomator dump "+path);
+            FastInputIME.sendText("中文测试");
+//            adb.sendText("wey");
+//            sleep(500);
+//            adb.longPress(300,150,500);
+//            sleep(2000);
+//            FastInputIME.sendText("中文测试");
+//            Observable.just("").subscribeOn(Schedulers.io())
+//                    .observeOn(Schedulers.io())
+//                    .subscribe(new Action1<String>() {
+//                        @Override
+//                        public void call(String s) {
+////                            AdbDevice adb = new AdbDevice();
+////                            adb.tap(300,150);
+//                            sleep(3000);
+//                            FastInputIME.sendText("中文测试222");
+//                        }
+//                    });
+//            FastInputIME.sendText("中文测试");
+//            ShellUtils.suShell("uiautomator dump "+path);
 //            Element element=position.findElementByText("粘贴");
 //            adb.tap(element);
 //            CommonUtils.paste(this.getApplicationContext());
@@ -135,6 +174,43 @@ public class ControlService extends Service{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 通过package名启动应用
+     *
+     * @param context
+     * @param packageName
+     * @return
+     */
+    @SuppressLint("NewApi")
+    public static boolean startActivityForPackage(Context context, String packageName) {
+        PackageInfo pi = null;
+        try {
+            pi = context.getPackageManager().getPackageInfo(packageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resolveIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        //		resolveIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        resolveIntent.setPackage(pi.packageName);
+        List<ResolveInfo> apps = context.getPackageManager().queryIntentActivities(resolveIntent, 0);
+        ResolveInfo ri = apps.iterator().next();
+        if (ri != null) {
+            String packageName1 = ri.activityInfo.packageName;
+            String className = ri.activityInfo.name;
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            ComponentName cn = new ComponentName(packageName1, className);
+            intent.setComponent(cn);
+            context.startActivity(intent);
+            return true;
+        }
+        return false;
     }
     @Override
     public void onDestroy() {

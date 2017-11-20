@@ -51,6 +51,17 @@
             android:name=".controldemo.ControlService"
             android:enabled="true"
             android:exported="true"/>
+        <!-- Declares the input method service -->
+        <service android:name=".controldemo.FastInputIME"
+            android:label="test ime"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
         <activity
             android:name=".dragphotoviewdemo.DragPhotoActivity"
             android:theme="@style/translucent"></activity>
