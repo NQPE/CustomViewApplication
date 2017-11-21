@@ -38,7 +38,7 @@
                         android:textSize="16sp" />
                 </RelativeLayout>
 
-                <com.hx100.levi.customviewapplication.customview.draggridview.DragGridView
+                <com.hx100.levi.customviewapplication.customview.draggridview.MyDragGridView
                     android:id="@+id/other_draggridview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                         android:textSize="16sp" />
                 </RelativeLayout>
 
-                <com.hx100.levi.customviewapplication.customview.draggridview.DragGridView
+                <com.hx100.levi.customviewapplication.customview.draggridview.MyDragGridView
                     android:id="@+id/draggridview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

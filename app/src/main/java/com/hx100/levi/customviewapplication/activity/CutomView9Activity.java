@@ -1,22 +1,15 @@
 package com.hx100.levi.customviewapplication.activity;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hx100.levi.customviewapplication.R;
-import com.hx100.levi.customviewapplication.customview.draggridview.DragGridView;
+import com.hx100.levi.customviewapplication.customview.draggridview.MyDragGridView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,8 +21,8 @@ import java.util.List;
  * Created by Levi on 2016/11/7.
  */
 public class CutomView9Activity extends Activity{
-    DragGridView draggridview;
-    DragGridView other_draggridview;
+    MyDragGridView draggridview;
+    MyDragGridView other_draggridview;
     TextView tv_change;
     TextView tv_add;
     TextView tv_getdata;
@@ -53,7 +46,7 @@ public class CutomView9Activity extends Activity{
     }
 
     private void setOtherDraggridview() {
-        other_draggridview= (DragGridView) findViewById(R.id.other_draggridview);
+        other_draggridview= (MyDragGridView) findViewById(R.id.other_draggridview);
         other_draggridview.setCol(4);
         otherAdapter=new OtherAdapter();
         other_draggridview.setDragEnable(false);
@@ -98,7 +91,7 @@ public class CutomView9Activity extends Activity{
     }
 
     private void setDraggridview() {
-        draggridview= (DragGridView) findViewById(R.id.draggridview);
+        draggridview= (MyDragGridView) findViewById(R.id.draggridview);
         draggridview.setCol(4);
         adapter=new MyAdapter();
         draggridview.setDragGridItemAdapter(adapter);
@@ -112,7 +105,7 @@ public class CutomView9Activity extends Activity{
         adapter.setData(data);
     }
 
-    public  class MyAdapter extends DragGridView.DragGridItemAdapter<Item>{
+    public  class MyAdapter extends MyDragGridView.DragGridItemAdapter<Item>{
 
 
         @Override
@@ -129,7 +122,7 @@ public class CutomView9Activity extends Activity{
                 @Override
                 public void onClick(View v) {
 //                    Toast.makeText(v.getContext(),itemData.title,Toast.LENGTH_SHORT).show();
-                    if (getDragGridView().getDragEnable()&&state==DragGridView.STATE_DRAG_ENABLE){
+                    if (getDragGridView().getDragEnable()&&state== MyDragGridView.STATE_DRAG_ENABLE){
 //                        removeItem(view);
                         removeMoveItemToTarget(other_draggridview,view);
                     }
@@ -146,7 +139,7 @@ public class CutomView9Activity extends Activity{
                 }
             });
 
-            if (state==DragGridView.STATE_DRAG_ENABLE){
+            if (state== MyDragGridView.STATE_DRAG_ENABLE){
                 view.findViewById(R.id.iv_del).setVisibility(dragGridView.getDragEnable()?View.VISIBLE:View.GONE);
             }else {
                 view.findViewById(R.id.iv_del).setVisibility(View.GONE);
@@ -155,7 +148,7 @@ public class CutomView9Activity extends Activity{
         }
 
     }
-    public  class OtherAdapter extends DragGridView.DragGridItemAdapter<Item>{
+    public  class OtherAdapter extends MyDragGridView.DragGridItemAdapter<Item>{
 
 
         @Override
@@ -189,7 +182,7 @@ public class CutomView9Activity extends Activity{
 //                }
 //            });
 
-            if (state==DragGridView.STATE_DRAG_ENABLE){
+            if (state== MyDragGridView.STATE_DRAG_ENABLE){
                 view.findViewById(R.id.iv_del).setVisibility(dragGridView.getDragEnable()?View.VISIBLE:View.GONE);
             }else {
                 view.findViewById(R.id.iv_del).setVisibility(View.GONE);

@@ -135,13 +135,13 @@ public class ControlService extends Service{
 //            com.hx100.levi.customviewapplication.controldemo.ShellUtils.execCommand("input tap 300 150",true);
             adb.tap(300,150);
 ////            sleep(1000);
-//            Observable.timer(2,TimeUnit.SECONDS)
-//                    .subscribe(new Action1<Long>() {
-//                        @Override
-//                        public void call(Long aLong) {
-//                            FastInputIME.sendText("中文测试");
-//                        }
-//                    });
+            Observable.timer(2,TimeUnit.SECONDS)
+                    .subscribe(new Action1<Long>() {
+                        @Override
+                        public void call(Long aLong) {
+                            FastInputIME.sendText("中文测试");
+                        }
+                    });
 
 //            adb.sendText("wey");
 //            sleep(500);

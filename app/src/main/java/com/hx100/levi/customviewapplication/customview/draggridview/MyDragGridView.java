@@ -5,13 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -33,7 +31,7 @@ import java.util.List;
  * Created by levi on 2017/3/27.
  * 可拖拽的GridView
  */
-public class DragGridView extends ViewGroup {
+public class MyDragGridView extends ViewGroup {
     public static final String TAG = "TAG_DragGridView";
 
     /**
@@ -101,15 +99,15 @@ public class DragGridView extends ViewGroup {
     //数据管理manager
     DragViewDataManager mDataManager=new DragViewDataManager();
 
-    public DragGridView(Context context) {
+    public MyDragGridView(Context context) {
         this(context, null);
     }
 
-    public DragGridView(Context context, AttributeSet attrs) {
+    public MyDragGridView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DragGridView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MyDragGridView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -903,7 +901,7 @@ public class DragGridView extends ViewGroup {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    DragGridView.this.removeView(item);
+                    MyDragGridView.this.removeView(item);
                 }
             });
             Message msg=new Message();
@@ -916,10 +914,10 @@ public class DragGridView extends ViewGroup {
          *
          */
         public View addItem(Object itemData){
-            View itemView=mDragGridIteAdapter.onCreateItemView(DragGridView.this);
+            View itemView=mDragGridIteAdapter.onCreateItemView(MyDragGridView.this);
             mDragGridIteAdapter.onBindView(STATE_DRAG_ENABLE,itemView,itemData);
             handleAddData(itemData,itemView);
-            DragGridView.this.addView(itemView);
+            MyDragGridView.this.addView(itemView);
             return itemView;
         }
 
@@ -983,7 +981,7 @@ public class DragGridView extends ViewGroup {
      * @param <T>
      */
     public abstract static class DragGridItemAdapter<T> {
-        protected DragGridView dragGridView;
+        protected MyDragGridView dragGridView;
         protected int disableDragCount=0;
 
         /**
@@ -997,7 +995,7 @@ public class DragGridView extends ViewGroup {
         }
 
         //关联dragGridView
-        private void attachDragGridView(DragGridView dragGridView){
+        private void attachDragGridView(MyDragGridView dragGridView){
             this.dragGridView=dragGridView;
         }
 
@@ -1022,7 +1020,7 @@ public class DragGridView extends ViewGroup {
             return disableDragCount;
         }
 
-        public DragGridView getDragGridView() {
+        public MyDragGridView getDragGridView() {
             return dragGridView;
         }
 
@@ -1066,7 +1064,7 @@ public class DragGridView extends ViewGroup {
          * 必须保证itemData 即T 一致
          * @param itemview
          */
-        public void removeMoveItemToTarget(final DragGridView target, final View itemview){
+        public void removeMoveItemToTarget(final MyDragGridView target, final View itemview){
             XYAttachPosition xy=target.getPrepareAddLastItemXY(itemview);
             final Object t=dragGridView.mMapInfoItemView.get(itemview).itemData;
             final View addItemView=target.getAdapter().addItem(t);
