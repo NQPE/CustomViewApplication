@@ -71,4 +71,5 @@ public class FastInputIME extends InputMethodService {
                 });
 
     }
+
 }

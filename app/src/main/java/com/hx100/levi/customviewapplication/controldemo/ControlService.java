@@ -14,9 +14,12 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import com.hx100.levi.customviewapplication.MainActivity;
 import com.hx100.levi.customviewapplication.R;
@@ -75,8 +78,20 @@ public class ControlService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         LogUtil.i("ControlService--onStartCommand");
 
-        startControl();
+//        startControl();
+        test();
         return START_STICKY;
+    }
+
+    private void test() {
+        String string = Settings.Secure.getString(getApplication().getContentResolver(), "default_input_method");
+        LogUtil.i("default_input_method=="+string);
+        for (InputMethodInfo id : ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE)).getEnabledInputMethodList()) {
+            LogUtil.i("id=="+id.getId());
+        }
+        String input_id="com.hx100.levi.customviewapplication/.controldemo.FastInputIME";
+        String input_id1="com.sohu.inputmethod.sogou/.SogouIME";
+        ShellUtils.suShell("ime set "+input_id1);
     }
 
     private void startControl() {
@@ -103,7 +118,7 @@ public class ControlService extends Service{
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(cmp);
         startActivity(intent);
-        sleep(2000);
+        sleep(1000);
         try {
             AdbDevice adb = new AdbDevice();
             String path= Environment.getExternalStorageDirectory()+"/customuiautomator/uidump.xml";
@@ -111,8 +126,32 @@ public class ControlService extends Service{
 //            ShellUtils.suShell("uiautomator dump "+path);
 //            sleep(4000);
             Position position = new Position();
-//            Element element=position.findElementByContentdesc("搜索");
+            Element element=position.findElementByText("wey");
+            adb.tap(element);
+//            ShellUtils.suShell("uiautomator dump "+path);
+
+//            element=position.findElementById("com.tencent.mm:id/aa6");
 //            adb.tap(element);
+//
+//            element=position.findElementByText("位置");
+//            adb.tap(element);
+//
+//            element=position.findElementByText("发送位置");
+//            adb.tap(element);
+//
+//            Observable.timer(2,TimeUnit.SECONDS)
+//                    .subscribe(new Action1<Long>() {
+//                        @Override
+//                        public void call(Long aLong) {
+//                            Position position = new Position();
+//                            Element element=position.findElementByText("发送");
+//                            AdbDevice adb = new AdbDevice();
+//                            adb.tap(element);
+//                        }
+//                    });
+
+
+
 //            sleep(200);
 //            adb.sendText("wey");
 //            CommonUtils.copy(this.getApplicationContext(),"中文测试");
@@ -133,15 +172,15 @@ public class ControlService extends Service{
 //                        }
 //                    });
 //            com.hx100.levi.customviewapplication.controldemo.ShellUtils.execCommand("input tap 300 150",true);
-            adb.tap(300,150);
+//            adb.tap(300,150);
 ////            sleep(1000);
-            Observable.timer(2,TimeUnit.SECONDS)
-                    .subscribe(new Action1<Long>() {
-                        @Override
-                        public void call(Long aLong) {
-                            FastInputIME.sendText("中文测试");
-                        }
-                    });
+//            Observable.timer(2,TimeUnit.SECONDS)
+//                    .subscribe(new Action1<Long>() {
+//                        @Override
+//                        public void call(Long aLong) {
+//                            FastInputIME.sendText("中文测试");
+//                        }
+//                    });
 
 //            adb.sendText("wey");
 //            sleep(500);
